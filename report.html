@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>DT Sprint 12 QA 報告</title>
+<style>
+  :root {
+    --pass: #10b981;
+    --fail: #ef4444;
+    --partial: #f59e0b;
+    --skip: #94a3b8;
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+    --accent: #c8a45c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    line-height: 1.6;
+  }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .meta { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; border-left: 4px solid var(--accent); padding-left: 12px; }
+  h3 { font-size: 16px; margin: 20px 0 8px; }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .toolbar button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .toolbar button:hover { background: #f5f5f4; border-color: var(--accent); }
+  .toolbar button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .toolbar button.primary:hover { background: #b08d47; }
+  .toolbar button.danger { color: var(--fail); border-color: #fecaca; }
+  .toolbar .status { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .toolbar .status.saved { color: var(--pass); }
+
+  .verdict {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 6px solid var(--fail);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: var(--fail); font-size: 18px; }
+  .verdict p { margin: 4px 0 0; font-size: 14px; }
+
+  .overall {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .overall-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 60px;
+    gap: 16px; align-items: center;
+    margin-bottom: 10px;
+  }
+  .overall-row:last-child { margin-bottom: 0; }
+  .overall-label { font-size: 14px; color: var(--muted); }
+  .overall-value { font-weight: 600; text-align: right; }
+
+  .bar {
+    height: 12px;
+    background: #f5f5f4;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; }
+  .bar-multi { display: flex; }
+  .bar-seg { height: 100%; }
+  .bar-pass { background: var(--pass); }
+  .bar-fail { background: var(--fail); }
+  .bar-partial { background: var(--partial); }
+  .bar-skip { background: var(--skip); }
+
+  .manual-progress {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 200px 1fr 100px;
+    gap: 16px; align-items: center;
+  }
+  .manual-progress .label { font-size: 14px; color: #065f46; font-weight: 600; }
+  .manual-progress .value { text-align: right; font-weight: 600; color: #065f46; }
+
+  table.tickets {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 14px;
+  }
+  table.tickets thead {
+    background: #f5f5f4;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  table.tickets th, table.tickets td {
+    padding: 12px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  table.tickets tbody tr:last-child td { border-bottom: none; }
+  table.tickets .col-expand { width: 32px; text-align: center; cursor: pointer; user-select: none; }
+  table.tickets .col-ticket { width: 70px; font-weight: 600; }
+  table.tickets .col-status { width: 90px; }
+  table.tickets .col-ac { width: 200px; }
+  table.tickets .col-done { width: 60px; text-align: center; }
+  table.tickets .col-note { width: 260px; }
+
+  .expand-caret {
+    display: inline-block;
+    transition: transform 0.2s;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  tr.expanded .expand-caret { transform: rotate(90deg); }
+
+  .chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chip-pass { background: #d1fae5; color: #065f46; }
+  .chip-fail { background: #fee2e2; color: #991b1b; }
+  .chip-partial { background: #fef3c7; color: #92400e; }
+  .chip-skip { background: #f1f5f9; color: #475569; }
+
+  .chip-sm {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .ac-mini { display: flex; align-items: center; gap: 8px; }
+  .ac-mini .bar { flex: 1; }
+  .ac-mini-label { font-size: 12px; color: var(--muted); min-width: 60px; text-align: right; }
+
+  .manual-check { display: flex; justify-content: center; align-items: center; }
+  .manual-check input[type="checkbox"] {
+    width: 20px; height: 20px;
+    cursor: pointer; accent-color: var(--pass);
+  }
+  .note-input {
+    width: 100%; min-height: 40px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+    background: #fafaf9;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .note-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: white;
+  }
+  tr.row-done { background: #f0fdf4; }
+  tr.row-done > td { color: #065f46; }
+
+  /* AC sub-table (nested inside expanded row) */
+  tr.ac-container > td {
+    background: #fafaf9;
+    padding: 0;
+    border-bottom: 2px solid var(--border);
+  }
+  table.ac-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: transparent;
+  }
+  table.ac-table thead {
+    background: #efeae0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  table.ac-table th, table.ac-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.ac-table tbody tr:last-child td { border-bottom: none; }
+  table.ac-table .col-ac-key { width: 60px; font-weight: 600; color: var(--accent); }
+  table.ac-table .col-ac-status { width: 80px; }
+  table.ac-table .col-ac-done { width: 60px; text-align: center; }
+  table.ac-table .col-ac-note { width: 260px; }
+  table.ac-table .ac-desc { color: var(--text); line-height: 1.5; }
+  table.ac-table tr.ac-done { background: #f0fdf4; }
+
+  .bug-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 5px solid;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .bug-card.p1 { border-left-color: var(--fail); }
+  .bug-card.p2 { border-left-color: var(--partial); }
+  .bug-card h3 { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+  .severity {
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .sev-p1 { background: var(--fail); color: white; }
+  .sev-p2 { background: var(--partial); color: white; }
+  .bug-card p { margin: 6px 0; font-size: 14px; }
+  .bug-card .label { color: var(--muted); font-size: 12px; margin-right: 4px; }
+
+  table.actions {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 14px;
+  }
+  table.actions thead { background: #f5f5f4; color: var(--muted); font-size: 13px; }
+  table.actions th, table.actions td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  table.actions tbody tr:last-child td { border-bottom: none; }
+  table.actions .col-id { width: 40px; font-weight: 600; color: var(--muted); }
+  table.actions .col-owner { width: 100px; font-weight: 600; }
+  table.actions .col-when { width: 120px; color: var(--muted); font-size: 13px; }
+
+  .exit {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .exit-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0; font-size: 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .exit-item:last-child { border-bottom: none; }
+  .exit-icon { font-size: 16px; min-width: 20px; }
+  .exit-note { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+  code { background: #f5f5f4; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  a { color: #0369a1; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .modal-mask {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-mask.show { display: flex; }
+  .modal {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 800px; width: 90%;
+    max-height: 85vh;
+    display: flex; flex-direction: column;
+  }
+  .modal h3 { margin: 0 0 12px; }
+  .modal textarea {
+    flex: 1; min-height: 400px; width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 12px; line-height: 1.5;
+    resize: none;
+  }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<h1>DT Sprint 12 · QA 報告</h1>
+<div class="meta">2026-07-01 · Alice 自測 · staging.justplaygame.com.tw · SOP v1.2</div>
+
+<div class="toolbar">
+  <button class="primary" onclick="showExport()">📋 匯出給 Claude</button>
+  <button onclick="downloadMd()">💾 下載 .md</button>
+  <button onclick="expandAll()">▽ 全部展開</button>
+  <button onclick="collapseAll()">△ 全部收合</button>
+  <button class="danger" onclick="clearAll()">🗑 清空手動紀錄</button>
+  <div class="status" id="save-status">本機自動儲存中</div>
+</div>
+
+<div class="verdict">
+  <h2>🔴 不建議收 sprint</h2>
+  <p>2 張明確 Fail（285 分頁、307 標題兩行未修）＋新開 P1 admin 前端互動失效，影響 4 張票的 AC 覆蓋。</p>
+</div>
+
+<h2>Sprint 進度總覽</h2>
+<div class="overall">
+  <div class="overall-row">
+    <div class="overall-label">10 張 RFT 完成度</div>
+    <div class="bar">
+      <div class="bar-multi" style="width: 100%">
+        <div class="bar-seg bar-pass" style="width: 10%"></div>
+        <div class="bar-seg bar-fail" style="width: 20%"></div>
+        <div class="bar-seg bar-partial" style="width: 30%"></div>
+        <div class="bar-seg bar-skip" style="width: 40%"></div>
+      </div>
+    </div>
+    <div class="overall-value">80%</div>
+  </div>
+  <div class="overall-row">
+    <div class="overall-label">AC 通過率（10 張加權）</div>
+    <div class="bar"><div class="bar-fill bar-pass" style="width: 27%"></div></div>
+    <div class="overall-value">27%</div>
+  </div>
+  <div class="overall-row">
+    <div class="overall-label">退場條件（6 項）</div>
+    <div class="bar"><div class="bar-fill bar-fail" style="width: 17%"></div></div>
+    <div class="overall-value">1/6</div>
+  </div>
+  <div class="overall-row" style="grid-template-columns: 200px 1fr; margin-top: 10px; font-size: 12px; color: var(--muted);">
+    <div></div>
+    <div>
+      <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 1
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--fail);border-radius:2px;vertical-align:middle;"></span> FAIL 2
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 3
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 未測 4
+    </div>
+  </div>
+</div>
+
+<div class="manual-progress">
+  <div class="label">✅ 我手動確認完成</div>
+  <div class="bar"><div class="bar-fill bar-pass" id="manual-bar" style="width: 0%"></div></div>
+  <div class="value">
+    <div>票 <span id="manual-count">0</span>/10</div>
+    <div style="font-size:11px;font-weight:400;">AC <span id="manual-ac-count">0</span>/<span id="manual-ac-total">0</span></div>
+  </div>
+</div>
+
+<h2>10 張 RFT 單票結果</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
+<table class="tickets">
+  <thead>
+    <tr>
+      <th class="col-expand"></th>
+      <th class="col-ticket">票號</th>
+      <th>標題</th>
+      <th class="col-status">結論</th>
+      <th class="col-ac">AC 覆蓋率</th>
+      <th class="col-done">整張<br>完成</th>
+      <th class="col-note">整張備註</th>
+    </tr>
+  </thead>
+  <tbody id="tickets-body"></tbody>
+</table>
+
+<h2>Bug 清單</h2>
+
+<div class="bug-card p1">
+  <h3><span class="severity sev-p1">P1</span> BUG-S12-01 · Admin 前端互動全面失效</h3>
+  <p><span class="label">現象：</span>後台所有 click 事件無反應（tab / 分頁 / 訂單編號連結 / 306 摺疊箭頭 / 側邊選單），但 console 無 JS error。可作用的僅：登入、URL 導航、hover。</p>
+  <p><span class="label">影響：</span>拖累 285 / 306 / 303 / 304 的 AC 覆蓋率；整個後台日常操作癱瘓。</p>
+  <p><span class="label">環境：</span><code>staging /admin/*</code></p>
+  <p><span class="label">建議：</span>前端查 hydration / event delegation；當 sprint 收尾阻擋條件。</p>
+</div>
+
+<div class="bug-card p1">
+  <h3><span class="severity sev-p1">P1</span> BUG-S12-03 · Admin 分頁載入白畫面</h3>
+  <p><span class="label">現象：</span><code>/admin/orders</code> 和 <code>/admin/products/new</code> 直接進去是全黑畫面，無任何內容渲染。</p>
+  <p><span class="label">建議：</span>釐清正確 route 或補 redirect。</p>
+</div>
+
+<div class="bug-card p2">
+  <h3><span class="severity sev-p2">P2</span> BUG-S12-02 · 307 標題兩行未修復</h3>
+  <p><span class="label">現象：</span>訂單管理列表商品名稱仍為 1 行 + 過長截斷，未依 fix 改為至多 2 行。</p>
+  <p><span class="label">建議：</span>Reject 307 修復，退回 In Progress 給 eddy。</p>
+</div>
+
+<div class="bug-card p2">
+  <h3><span class="severity sev-p2">P2</span> BUG-S12-04 · 前台購物車 QA 資料異常（測試環境）</h3>
+  <p><span class="label">現象：</span>前台加 mario 商品進購物車卻顯示成「NS2 晚安宇宙」+「規格已不販售」，Step1 無法通過 → 卡住 271 測試。</p>
+  <p><span class="label">建議：</span>依 Confluence <a href="https://hihealthtw.atlassian.net/wiki/spaces/JP1/pages/edit-v2/157319178" target="_blank">157319178</a> 在 staging setup QA-A~F 基準商品。</p>
+</div>
+
+<h2>退場條件（SOP §6）</h2>
+<div class="exit">
+  <div class="exit-item"><span class="exit-icon">❌</span>所有 ticket 核心 AC Pass<span class="exit-note">285 / 307 明確 Fail</span></div>
+  <div class="exit-item"><span class="exit-icon">❌</span>E2E-1 Happy Path 端到端 ≥ 3 次<span class="exit-note">商品缺貨 + Step2 進不去</span></div>
+  <div class="exit-item"><span class="exit-icon">⏭️</span>信件用「訂單編號」<span class="exit-note">本 sprint 無信件 ticket</span></div>
+  <div class="exit-item"><span class="exit-icon">❌</span>無 P0 / P1 新 bug 殘留<span class="exit-note">BUG-01 / BUG-03 P1 新增</span></div>
+  <div class="exit-item"><span class="exit-icon">⏳</span>P2/P3 bug 進下 sprint backlog<span class="exit-note">BUG-02 / BUG-04 需開票</span></div>
+  <div class="exit-item"><span class="exit-icon">❌</span>本 sprint 主要阻擋 bug 修復通過<span class="exit-note">307 未修</span></div>
+</div>
+
+<h2>Action Items</h2>
+<table class="actions">
+  <thead>
+    <tr><th class="col-id">#</th><th class="col-owner">Owner</th><th>動作</th><th class="col-when">期限</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="col-id">A1</td><td class="col-owner">eddy</td><td>306 AC2 摺疊是否已實作？若已實作看是否被 BUG-01 拖累</td><td class="col-when">今日</td></tr>
+    <tr><td class="col-id">A2</td><td class="col-owner">eddy</td><td>307 標題兩行 fix 退回 In Progress，實際改 CSS</td><td class="col-when">今日</td></tr>
+    <tr><td class="col-id">A3</td><td class="col-owner">eddy / Roman</td><td>排查 BUG-01：admin 頁面 click event 全失效</td><td class="col-when">P1 立即</td></tr>
+    <tr><td class="col-id">A4</td><td class="col-owner">eddy</td><td>304 mobile 版檢查（bug 原圖是 mobile）</td><td class="col-when">補測</td></tr>
+    <tr><td class="col-id">A5</td><td class="col-owner">albert</td><td>275 提供 csv 樣本 + 匯入 UI 路徑</td><td class="col-when">下 sprint 前</td></tr>
+    <tr><td class="col-id">A6</td><td class="col-owner">Alice</td><td>QA-A~F 基準商品在 staging setup（Confluence 157319178）</td><td class="col-when">本 sprint 內</td></tr>
+    <tr><td class="col-id">A7</td><td class="col-owner">Reverie</td><td>349 等 parent 242 完成後一起 RFT</td><td class="col-when">下 sprint</td></tr>
+    <tr><td class="col-id">A8</td><td class="col-owner">Joe</td><td>303「未知狀態」chip 命名對照 Figma 2153-27248</td><td class="col-when">補查</td></tr>
+  </tbody>
+</table>
+
+<div class="modal-mask" id="export-modal" onclick="if(event.target===this)hideExport()">
+  <div class="modal">
+    <h3>📋 匯出手動測試紀錄（貼給 Claude）</h3>
+    <textarea id="export-text" readonly></textarea>
+    <div class="modal-actions">
+      <button onclick="copyExport(event)">📄 複製到剪貼簿</button>
+      <button onclick="hideExport()">關閉</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'qa-sprint12-manual-v2';
+const EXPAND_KEY = 'qa-sprint12-expanded-v2';
+
+const STATUS_CHIP = {
+  pass:    { chip: '✅ PASS', short: '✅ Pass' },
+  fail:    { chip: '🔴 FAIL', short: '🔴 Fail' },
+  partial: { chip: '🟡 PARTIAL', short: '🟡 Partial' },
+  skip:    { chip: '⏭️ 未測', short: '⏭️ 未測' },
+};
+
+const tickets = [
+  {
+    id: '284', title: '搜尋大小寫不區分', status: 'pass', ac: '4/4', acPct: 100, acColor: 'pass',
+    acs: [
+      { key: 'AC1', desc: '小寫「mario」→ 含「UNO 經典款」類商品', status: 'pass', evidence: 'ss_2503mjuvh：搜尋結果 8+ 筆商品' },
+      { key: 'AC2', desc: '大寫「MARIO」→ 同一批結果',            status: 'pass', evidence: '前 8 筆順序與 mario 一致' },
+      { key: 'AC3', desc: '混合「Mario」→ 同一批結果',            status: 'pass', evidence: '前 8 筆順序與 mario 一致' },
+      { key: 'AC4', desc: '查無結果 → 顯示空狀態、不報錯',        status: 'pass', evidence: '「抱歉，找不到您所查詢的『zzzzzzznotexist』相關商品」' },
+    ]
+  },
+  {
+    id: '306', title: '左側目錄預設全展開', status: 'partial', ac: '1/3', acPct: 33, acColor: 'partial',
+    acs: [
+      { key: 'AC1', desc: '進頁時左側目錄兩個群組（商品管理 / 訂單追蹤）預設全展開', status: 'pass',    evidence: '登入後 dashboard 兩群組已展開' },
+      { key: 'AC2', desc: '手動點群組標題可摺疊；重整或換頁不覆寫使用者選擇',        status: 'fail',    evidence: '點標題與 v icon 都無反應（疑被 BUG-01 拖累）' },
+      { key: 'AC3', desc: '換頁 / F5 後回到預設展開狀態',                              status: 'skip',    evidence: 'AC2 未生效無法反證，跳過' },
+    ]
+  },
+  {
+    id: '285', title: '商品總覽一頁 25 個', status: 'fail', ac: '1/6', acPct: 17, acColor: 'fail',
+    acs: [
+      { key: 'AC1', desc: '第 1 頁顯示前 25 筆，列表下方出現分頁控制（頁碼 + 上/下），目前頁 1 高亮', status: 'pass', evidence: '底部顯示 < 1 2 3 4 5 ... 129 >' },
+      { key: 'AC2', desc: '點下一頁 or 頁碼 2 → 顯示 26-50 筆，頁面捲回頂，目前頁高亮更新',           status: 'fail', evidence: '點頁碼 2、點下一頁 > 均無反應（BUG-01）' },
+      { key: 'AC3', desc: '最後一頁 (第 129 頁) 只顯示剩餘筆數、不補空列不報錯',                       status: 'skip', evidence: 'AC2 broken 無法切到第 129 頁' },
+      { key: 'AC4', desc: '空清單 → 顯示空狀態且不出現分頁控制',                                        status: 'skip', evidence: '「已下架 0」tab 點無反應（BUG-01）' },
+      { key: 'AC5', desc: '排序切換後 → 回到第 1 頁並套用新排序',                                        status: 'skip', evidence: 'AC2 broken 無法先切到第 3 頁' },
+      { key: 'AC6', desc: '某頁載入失敗 → 中文提示「無法載入，請稍後再試」可重試',                    status: 'skip', evidence: '無法模擬 500，跳過' },
+    ]
+  },
+  {
+    id: '307', title: '訂單標題至多兩行（Bug）', status: 'fail', ac: '未修', acPct: 0, acColor: 'fail',
+    acs: [
+      { key: 'DoD', desc: '訂單管理列表商品名稱過長時應斷為至多 2 行（非現況 1 行截斷）', status: 'fail', evidence: 'ss_4212upwkq zoom 圖：商品名稱仍 1 行截斷未斷行' },
+    ]
+  },
+  {
+    id: '304', title: '訂單編號時間格式（Bug）', status: 'partial', ac: '桌面 OK / mobile 未驗', acPct: 50, acColor: 'partial',
+    acs: [
+      { key: 'DoD-1', desc: '訂單編號中的日期 pattern 應為 YYYYMMDD',                     status: 'pass',    evidence: 'CDEMO202606300001 → 20260630 對應 2026-06-30 ✅' },
+      { key: 'DoD-2', desc: '訂單成立時間顯示格式應為 YYYY-MM-DD HH:mm',                  status: 'pass',    evidence: '列表顯示 2026-06-30 16:30 ✅' },
+      { key: 'DoD-3', desc: 'Mobile 版（bug 原圖 252x466）時間格式修復確認',              status: 'skip',    evidence: '桌面 OK 不代表 mobile 已修，需另補測' },
+    ]
+  },
+  {
+    id: '303', title: '訂單超過 40min 清「尚未付款」（Bug）', status: 'partial', ac: '間接證據', acPct: 50, acColor: 'partial',
+    acs: [
+      { key: 'DoD-1', desc: '訂單成立超過 40 min 未付款時，「尚未付款」狀態應被清掉',   status: 'partial', evidence: '「尚未付款」tab count = 0（間接證據）' },
+      { key: 'DoD-2', desc: '主動驗：造未付款訂單 → 等 40 min → 檢查狀態被清掉',        status: 'skip',    evidence: '需製造訂單並等 40 min，本次未跑' },
+    ]
+  },
+  {
+    id: '271', title: '隱私權 checkbox 位置', status: 'skip', ac: '卡 Step1', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '隱私權 checkbox 顯示在購物車 Step2「去結帳」btn 上方',  status: 'skip', evidence: '卡在 Step1 無法進 Step2' },
+      { key: 'AC2', desc: '未勾選 checkbox 時「去結帳」btn 為 disabled 狀態',       status: 'skip', evidence: 'Alice 決定本 sprint 只驗 UI 位置不驗行為' },
+      { key: 'AC3', desc: 'checkbox 內「隱私權」文字為可點連結',                     status: 'skip', evidence: '延到補測' },
+    ]
+  },
+  {
+    id: '275', title: 'demo 後台匯入 csv 格式', status: 'skip', ac: '缺 csv 樣本', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'DoD-1', desc: '商品總覽 csv 匯入格式定義符合規格',                    status: 'skip', evidence: '需 albert 提供 csv 樣本 + 匯入路徑' },
+      { key: 'DoD-2', desc: '訂單追蹤 csv 匯入格式定義符合規格',                    status: 'skip', evidence: '同上' },
+    ]
+  },
+  {
+    id: '349', title: '[後端] shipment 多宅配資料', status: 'skip', ac: 'Sub-task', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: '—', desc: 'Sub-task：後端資料結構，parent 242「宅配運費金額分級」未進 RFT，建議一起等', status: 'skip', evidence: 'Sub-task 依 SOP §3.2.1 PM 不主測' },
+    ]
+  },
+  {
+    id: '294', title: '[後端] 蝦皮 csv 匯入', status: 'skip', ac: 'Sub-task', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: '—', desc: 'Sub-task：依附 275 主 story，parent 未完成前不主測', status: 'skip', evidence: '同上' },
+    ]
+  },
+];
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  showSaved();
+}
+function loadExpanded() {
+  try { return JSON.parse(localStorage.getItem(EXPAND_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveExpanded() {
+  localStorage.setItem(EXPAND_KEY, JSON.stringify(expanded));
+}
+
+let state = loadState();
+let expanded = loadExpanded();
+
+function ensureTicketState(id) {
+  if (!state[id]) state[id] = { done: false, note: '', acs: {} };
+  if (!state[id].acs) state[id].acs = {};
+  return state[id];
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderTickets() {
+  const tbody = document.getElementById('tickets-body');
+  const rows = [];
+  tickets.forEach(t => {
+    const s = ensureTicketState(t.id);
+    const checked = s.done ? 'checked' : '';
+    const note = escapeHtml(s.note || '');
+    const rowClass = s.done ? 'row-done' : '';
+    const isExpanded = expanded[t.id];
+    const expandedClass = isExpanded ? 'expanded' : '';
+    rows.push(`
+      <tr class="${rowClass} ${expandedClass}" id="row-${t.id}">
+        <td class="col-expand" onclick="toggleExpand('${t.id}')">
+          <span class="expand-caret">▶</span>
+        </td>
+        <td class="col-ticket"><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-${t.id}" target="_blank">${t.id}</a></td>
+        <td>${t.title}</td>
+        <td><span class="chip chip-${t.status}">${STATUS_CHIP[t.status].chip}</span></td>
+        <td class="col-ac">
+          <div class="ac-mini">
+            <div class="bar"><div class="bar-fill bar-${t.acColor}" style="width:${t.acPct}%"></div></div>
+            <div class="ac-mini-label">${t.ac}</div>
+          </div>
+        </td>
+        <td class="col-done">
+          <div class="manual-check">
+            <input type="checkbox" ${checked} onchange="toggleDone('${t.id}', this.checked)">
+          </div>
+        </td>
+        <td class="col-note">
+          <textarea class="note-input" placeholder="整張測試筆記..." oninput="updateNote('${t.id}', this.value)">${note}</textarea>
+        </td>
+      </tr>
+      <tr class="ac-container" id="ac-container-${t.id}" style="display:${isExpanded ? 'table-row' : 'none'};">
+        <td colspan="7">
+          ${renderAcTable(t)}
+        </td>
+      </tr>
+    `);
+  });
+  tbody.innerHTML = rows.join('');
+  updateManualProgress();
+}
+
+function renderAcTable(t) {
+  const s = ensureTicketState(t.id);
+  const rows = t.acs.map(ac => {
+    const asub = s.acs[ac.key] || {};
+    const checked = asub.done ? 'checked' : '';
+    const note = escapeHtml(asub.note || '');
+    const rowClass = asub.done ? 'ac-done' : '';
+    return `
+      <tr class="${rowClass}">
+        <td class="col-ac-key">${ac.key}</td>
+        <td class="ac-desc">
+          <div>${escapeHtml(ac.desc)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">🔍 ${escapeHtml(ac.evidence)}</div>
+        </td>
+        <td class="col-ac-status"><span class="chip-sm chip-${ac.status}">${STATUS_CHIP[ac.status].short}</span></td>
+        <td class="col-ac-done">
+          <div class="manual-check">
+            <input type="checkbox" ${checked} onchange="toggleAcDone('${t.id}','${ac.key}',this.checked)">
+          </div>
+        </td>
+        <td class="col-ac-note">
+          <textarea class="note-input" placeholder="這條 AC 的補測筆記..." oninput="updateAcNote('${t.id}','${ac.key}',this.value)">${note}</textarea>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  return `
+    <table class="ac-table">
+      <thead>
+        <tr>
+          <th class="col-ac-key">編號</th>
+          <th>AC 描述 + 自動驗收證據</th>
+          <th class="col-ac-status">自動判定</th>
+          <th class="col-ac-done">手動<br>OK</th>
+          <th class="col-ac-note">單條備註</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function toggleExpand(id) {
+  expanded[id] = !expanded[id];
+  saveExpanded();
+  const row = document.getElementById(`row-${id}`);
+  const container = document.getElementById(`ac-container-${id}`);
+  if (expanded[id]) {
+    row.classList.add('expanded');
+    container.style.display = 'table-row';
+  } else {
+    row.classList.remove('expanded');
+    container.style.display = 'none';
+  }
+}
+
+function expandAll() {
+  tickets.forEach(t => { expanded[t.id] = true; });
+  saveExpanded();
+  renderTickets();
+}
+function collapseAll() {
+  tickets.forEach(t => { expanded[t.id] = false; });
+  saveExpanded();
+  renderTickets();
+}
+
+function toggleDone(id, done) {
+  const s = ensureTicketState(id);
+  s.done = done;
+  s.doneAt = done ? new Date().toISOString() : null;
+  saveState();
+  document.getElementById(`row-${id}`).classList.toggle('row-done', done);
+  updateManualProgress();
+}
+
+function updateNote(id, note) {
+  const s = ensureTicketState(id);
+  s.note = note;
+  s.noteAt = new Date().toISOString();
+  saveState();
+}
+
+function toggleAcDone(ticketId, acKey, done) {
+  const s = ensureTicketState(ticketId);
+  if (!s.acs[acKey]) s.acs[acKey] = {};
+  s.acs[acKey].done = done;
+  s.acs[acKey].doneAt = done ? new Date().toISOString() : null;
+  saveState();
+  renderTickets();
+}
+
+function updateAcNote(ticketId, acKey, note) {
+  const s = ensureTicketState(ticketId);
+  if (!s.acs[acKey]) s.acs[acKey] = {};
+  s.acs[acKey].note = note;
+  s.acs[acKey].noteAt = new Date().toISOString();
+  saveState();
+}
+
+function updateManualProgress() {
+  const doneTickets = tickets.filter(t => state[t.id] && state[t.id].done).length;
+  document.getElementById('manual-count').textContent = doneTickets;
+  document.getElementById('manual-bar').style.width = Math.round((doneTickets / tickets.length) * 100) + '%';
+
+  let totalAcs = 0, doneAcs = 0;
+  tickets.forEach(t => {
+    totalAcs += t.acs.length;
+    t.acs.forEach(ac => {
+      if (state[t.id] && state[t.id].acs && state[t.id].acs[ac.key] && state[t.id].acs[ac.key].done) {
+        doneAcs++;
+      }
+    });
+  });
+  document.getElementById('manual-ac-count').textContent = doneAcs;
+  document.getElementById('manual-ac-total').textContent = totalAcs;
+}
+
+let saveTimer;
+function showSaved() {
+  const el = document.getElementById('save-status');
+  el.textContent = '✓ 已儲存';
+  el.classList.add('saved');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    el.textContent = '本機自動儲存中';
+    el.classList.remove('saved');
+  }, 1500);
+}
+
+function buildExport() {
+  const now = new Date();
+  const ts = now.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+  let md = `# Sprint 12 QA 手動測試紀錄\n\n`;
+  md += `**匯出時間**：${ts}\n`;
+  md += `**執行**：Alice · staging.justplaygame.com.tw\n\n`;
+  const doneTickets = tickets.filter(t => state[t.id] && state[t.id].done).length;
+  let totalAcs = 0, doneAcs = 0;
+  tickets.forEach(t => {
+    totalAcs += t.acs.length;
+    t.acs.forEach(ac => {
+      if (state[t.id] && state[t.id].acs && state[t.id].acs[ac.key] && state[t.id].acs[ac.key].done) doneAcs++;
+    });
+  });
+  md += `**整張手動完成**：${doneTickets}/${tickets.length}\n`;
+  md += `**AC 逐條手動完成**：${doneAcs}/${totalAcs}\n\n---\n\n`;
+
+  md += `## 單票 + AC 逐條紀錄\n\n`;
+  tickets.forEach(t => {
+    const s = state[t.id] || { acs: {} };
+    const doneMark = s.done ? '✅' : '⬜';
+    md += `### ${doneMark} JUSTPLAY-${t.id} · ${t.title}\n`;
+    md += `- **自動判定**：${STATUS_CHIP[t.status].chip} · AC ${t.ac}\n`;
+    md += `- **整張手動完成**：${s.done ? '是' : '否'}${s.doneAt ? ` (${new Date(s.doneAt).toLocaleString('zh-TW')})` : ''}\n`;
+    md += `- **整張備註**：${s.note ? '\n\n  ' + s.note.replace(/\n/g, '\n  ') : '（空）'}\n\n`;
+    md += `**AC 逐條**：\n\n`;
+    t.acs.forEach(ac => {
+      const asub = (s.acs && s.acs[ac.key]) || {};
+      const acDone = asub.done ? '✅' : '⬜';
+      md += `- ${acDone} **${ac.key}** ${ac.desc}\n`;
+      md += `  - 自動判定：${STATUS_CHIP[ac.status].short}\n`;
+      md += `  - 證據：${ac.evidence}\n`;
+      md += `  - 手動 OK：${asub.done ? '是' : '否'}\n`;
+      if (asub.note) md += `  - 備註：${asub.note.replace(/\n/g, ' / ')}\n`;
+    });
+    md += `\n`;
+  });
+
+  md += `---\n\n## Bug 清單（自動判定）\n\n`;
+  md += `- **BUG-S12-01** [P1] Admin 前端互動全面失效\n`;
+  md += `- **BUG-S12-02** [P2] 307 標題兩行未修復\n`;
+  md += `- **BUG-S12-03** [P1] Admin 分頁載入白畫面（/admin/orders、/admin/products/new）\n`;
+  md += `- **BUG-S12-04** [P2] 前台購物車 QA 資料異常\n\n`;
+
+  md += `## 退場條件\n\n`;
+  md += `- ❌ 所有 ticket 核心 AC Pass（285 / 307 Fail）\n`;
+  md += `- ❌ E2E-1 Happy Path 未完成\n`;
+  md += `- ❌ 無 P0 / P1 新 bug 殘留（BUG-01 / BUG-03 新增）\n`;
+  md += `- ❌ 本 sprint 主要阻擋 bug 修復通過（307 未修）\n\n`;
+
+  md += `## 給 Claude 的提示\n\n`;
+  md += `這是 DT Sprint 12 QA 手動測試紀錄。若 Alice 貼給你，請針對「備註」欄的問題協助釐清、依 hi-health-qa-sop §5.1 判斷 bug 嚴重度、或評估退場條件是否可通過。\n`;
+  return md;
+}
+
+function showExport() {
+  document.getElementById('export-text').value = buildExport();
+  document.getElementById('export-modal').classList.add('show');
+}
+function hideExport() {
+  document.getElementById('export-modal').classList.remove('show');
+}
+function copyExport(e) {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  document.execCommand('copy');
+  const btn = e.target;
+  const orig = btn.textContent;
+  btn.textContent = '✓ 已複製';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+function downloadMd() {
+  const md = buildExport();
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,16).replace(/[-:T]/g, '');
+  a.href = url;
+  a.download = `qa-sprint12-manual-${stamp}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function clearAll() {
+  if (!confirm('確定清空所有手動勾選與備註（票層 + AC 層）？此動作不可復原。')) return;
+  state = {};
+  localStorage.removeItem(STORAGE_KEY);
+  renderTickets();
+  showSaved();
+}
+
+renderTickets();
+</script>
+
+</body>
+</html>
