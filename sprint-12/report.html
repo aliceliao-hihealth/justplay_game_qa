@@ -699,9 +699,16 @@ function toggleDone(id, done) {
   const s = ensureTicketState(id);
   s.done = done;
   s.doneAt = done ? new Date().toISOString() : null;
+  // Alice 規則：母勾 → 子 AC 全勾；取消母 → 子 AC 全取消
+  const t = tickets.find(x => x.id === id);
+  const now = new Date().toISOString();
+  t.acs.forEach(ac => {
+    if (!s.acs[ac.key]) s.acs[ac.key] = {};
+    s.acs[ac.key].done = done;
+    s.acs[ac.key].doneAt = done ? now : null;
+  });
   saveState();
-  document.getElementById(`row-${id}`).classList.toggle('row-done', done);
-  updateManualProgress();
+  renderTickets();
 }
 
 function updateNote(id, note) {
