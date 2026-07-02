@@ -341,21 +341,21 @@
 <h2>Sprint 進度總覽</h2>
 <div class="overall">
   <div class="overall-row">
-    <div class="overall-label">10 張 RFT 完成度</div>
+    <div class="overall-label">17 張 RFT 完成度</div>
     <div class="bar">
       <div class="bar-multi" style="width: 100%">
-        <div class="bar-seg bar-pass" style="width: 10%"></div>
-        <div class="bar-seg bar-fail" style="width: 20%"></div>
-        <div class="bar-seg bar-partial" style="width: 30%"></div>
-        <div class="bar-seg bar-skip" style="width: 40%"></div>
+        <div class="bar-seg bar-pass" style="width: 6%"></div>
+        <div class="bar-seg bar-fail" style="width: 12%"></div>
+        <div class="bar-seg bar-partial" style="width: 18%"></div>
+        <div class="bar-seg bar-skip" style="width: 64%"></div>
       </div>
     </div>
-    <div class="overall-value">80%</div>
+    <div class="overall-value">35%</div>
   </div>
   <div class="overall-row">
-    <div class="overall-label">AC 通過率（10 張加權）</div>
-    <div class="bar"><div class="bar-fill bar-pass" style="width: 27%"></div></div>
-    <div class="overall-value">27%</div>
+    <div class="overall-label">AC 通過率（17 張加權）</div>
+    <div class="bar"><div class="bar-fill bar-pass" style="width: 15%"></div></div>
+    <div class="overall-value">15%</div>
   </div>
   <div class="overall-row">
     <div class="overall-label">退場條件（6 項）</div>
@@ -368,7 +368,7 @@
       <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 1
       <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--fail);border-radius:2px;vertical-align:middle;"></span> FAIL 2
       <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 3
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 未測 4
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 未測 11（含新加 7）
     </div>
   </div>
 </div>
@@ -377,12 +377,12 @@
   <div class="label">✅ 我手動確認完成</div>
   <div class="bar"><div class="bar-fill bar-pass" id="manual-bar" style="width: 0%"></div></div>
   <div class="value">
-    <div>票 <span id="manual-count">0</span>/10</div>
+    <div>票 <span id="manual-count">0</span>/17</div>
     <div style="font-size:11px;font-weight:400;">AC <span id="manual-ac-count">0</span>/<span id="manual-ac-total">0</span></div>
   </div>
 </div>
 
-<h2>10 張 RFT 單票結果</h2>
+<h2>17 張 RFT 單票結果</h2>
 <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
 <table class="tickets">
   <thead>
@@ -477,6 +477,71 @@ const STATUS_CHIP = {
 };
 
 const tickets = [
+  // ====== 新加入 sprint 12（尚未執行 QA）======
+  {
+    id: '242', title: '【宅配】購物車 + 訂單追蹤 + 後台手動出貨', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '購物車寄送方式新增「宅配」選項可選（前台）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC2', desc: '訂單追蹤頁物流方式可顯示「宅配」（前台）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC3', desc: '後台可選客代＆材積、手動輸入物流單號、顯示收件地址', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC4', desc: '點「出貨按鈕」後訂單狀態變「運送中」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC5', desc: '全程手動、不接宅配 API（物流單號人工輸入、狀態人工切換）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  {
+    id: '243', title: '【購物車】超過 20,000 阻擋超取', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '購物車金額 > NT$20,000 時，7-11/全家 disabled、宅配自動選', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC2', desc: '停用提示文案「因購物車金額超過 NT$20,000，超商取貨已停用，請改選宅配到府。」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC3', desc: '超商取貨付款連動 disabled，僅能選信用卡/金融卡', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC4', desc: '金額回落 ≤ NT$20,000 後，超商恢復可選、提示消失', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC5', desc: '邊界：金額 = NT$20,000 不擋（可建單範圍含 $20,000）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  {
+    id: '274', title: '[商品編輯] 運費順序：711→全家→宅配', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '後台商品「運費」分頁物流選項由上到下依序為 7-11 → 全家 → 宅配', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  {
+    id: '316', title: '後台商品物流開關 ↔ link to 前台物流', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '後台商品僅開「宅配」時，前台商品頁只顯示「宅配」，7-11/全家 disabled', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC2', desc: '三個物流開關全關閉時禁止儲存並顯示錯誤提示', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC4', desc: '物流欄位讀取失敗時，前台顯示錯誤文案且「加入購物車」暫時 disabled', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  {
+    id: '269', title: '【購物車】含「僅限宅配」商品停用超商', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '購物車含至少 1 筆「僅限宅配」商品時，7-11/全家 disabled、宅配自動選', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC2', desc: '觸發停用時顯示紅字提示（比照 243 情境 C）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC4', desc: '移除所有「僅限宅配」商品後，超商恢復可選、提示消失', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC5', desc: '邊界：同時滿足「金額 > 20,000」+「含僅限宅配」時，紅字商品優先於金額', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  {
+    id: '290', title: '前台購物車選發票類型 + 後台訂單追蹤顯示發票資訊', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'S1-AC1', desc: '結帳發票區塊未選時，預設「二聯式發票」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'S1-AC2', desc: '選「三聯式」時，統編或公司抬頭留空送出應擋下並顯示必填提示', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'S1-AC3', desc: '選三聯式時，統編非 8 碼數字應顯示格式錯誤、不可送出', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'S2-AC1', desc: '後台訂單詳情「買家資訊 → 收件人資料」顯示「發票類型」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'S2-AC2', desc: '訂單為三聯式時，一併顯示統編與公司抬頭', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  {
+    id: '311', title: '訂單追蹤：物流資訊', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'AC1', desc: '所有訂單詳情頁顯示「物流資訊」區塊，含寄送方式/物流單號/目前貨況/重要時間點', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC2', desc: '超商訂單付款成功後，物流單號 + 貨況自動帶入（綠界回傳值）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC3', desc: '宅配訂單狀態=待出貨時，物流單號可手動輸入儲存、目前貨況顯示「—」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC4', desc: '尚未付款訂單，物流資訊區塊欄位皆顯示「—」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC5', desc: '綠界物流建立失敗時，物流單號欄顯示「物流訂單建立失敗」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+    ]
+  },
+  // ====== 原本已測 10 張 ======
   {
     id: '284', title: '搜尋大小寫不區分', status: 'pass', ac: '4/4', acPct: 100, acColor: 'pass',
     acs: [
