@@ -508,17 +508,17 @@ const tickets = [
     ]
   },
   {
-    id: '274', title: '[商品編輯] 運費順序：711→全家→宅配', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '274', title: '[商品編輯] 運費順序：711→全家→宅配', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'AC1', desc: '後台商品「運費」分頁物流選項由上到下依序為 7-11 → 全家 → 宅配', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC1', desc: '後台商品「運費」分頁物流選項由上到下依序為 7-11 → 全家 → 宅配', status: 'pass', evidence: '2026-07-03 驗：進「澳洲國際網球2」編輯頁 → 運費分頁，順序完全正確：7-11取貨 → 全家取貨 → 宅配（三行 toggle，每行 NT$ 0）' },
     ]
   },
   {
-    id: '316', title: '後台商品物流開關 ↔ link to 前台物流', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '316', title: '後台商品物流開關 ↔ link to 前台物流', status: 'fail', ac: '1/3 Fail', acPct: 33, acColor: 'fail',
     acs: [
-      { key: 'AC1', desc: '後台商品僅開「宅配」時，前台商品頁只顯示「宅配」，7-11/全家 disabled', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC2', desc: '三個物流開關全關閉時禁止儲存並顯示錯誤提示', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC4', desc: '物流欄位讀取失敗時，前台顯示錯誤文案且「加入購物車」暫時 disabled', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC1', desc: '後台商品僅開「宅配」時，前台商品頁只顯示「宅配」，7-11/全家 disabled', status: 'skip', evidence: '⛔ 需先修 BUG-06 或改一顆測試商品再驗' },
+      { key: 'AC2', desc: '三個物流開關全關閉時禁止儲存並顯示錯誤提示', status: 'fail', evidence: '2026-07-03 驗：「澳洲國際網球2」三個 toggle 都是 OFF 但商品已上架且前台顯示 6 規格 → 驗證未實作。這也是 BUG-06 根因（前台讀不到任何可用物流）' },
+      { key: 'AC4', desc: '物流欄位讀取失敗時，前台顯示錯誤文案且「加入購物車」暫時 disabled', status: 'skip', evidence: '前台目前是靜默失敗（radiogroup 空白），沒有錯誤文案 → 這條也 fail 但需 BUG-06 修好後才能完整驗' },
     ]
   },
   {
@@ -531,23 +531,23 @@ const tickets = [
     ]
   },
   {
-    id: '290', title: '前台購物車選發票類型 + 後台訂單追蹤顯示發票資訊', status: 'skip', ac: '⛔ Blocked (S1)', acPct: 0, acColor: 'skip',
+    id: '290', title: '前台購物車選發票類型 + 後台訂單追蹤顯示發票資訊', status: 'fail', ac: '1/5 Fail', acPct: 20, acColor: 'fail',
     acs: [
-      { key: 'S1-AC1', desc: '結帳發票區塊未選時，預設「二聯式發票」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'S1-AC2', desc: '選「三聯式」時，統編或公司抬頭留空送出應擋下並顯示必填提示', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'S1-AC3', desc: '選三聯式時，統編非 8 碼數字應顯示格式錯誤、不可送出', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'S2-AC1', desc: '後台訂單詳情「買家資訊 → 收件人資料」顯示「發票類型」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'S2-AC2', desc: '訂單為三聯式時，一併顯示統編與公司抬頭', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'S1-AC1', desc: '結帳發票區塊未選時，預設「二聯式發票」', status: 'skip', evidence: '⛔ blocked by BUG-06（結帳頁進不去）' },
+      { key: 'S1-AC2', desc: '選「三聯式」時，統編或公司抬頭留空送出應擋下並顯示必填提示', status: 'skip', evidence: '⛔ blocked by BUG-06' },
+      { key: 'S1-AC3', desc: '選三聯式時，統編非 8 碼數字應顯示格式錯誤、不可送出', status: 'skip', evidence: '⛔ blocked by BUG-06' },
+      { key: 'S2-AC1', desc: '後台訂單詳情「買家資訊 → 收件人資料」顯示「發票類型」', status: 'fail', evidence: '2026-07-03 驗：進 SH2604220001 訂單詳情 side panel，買家資訊區只有 Email/收件人名稱/手機/付款方式/取貨方式 5 欄，未見「發票類型」欄位 → S2-AC1 未實作' },
+      { key: 'S2-AC2', desc: '訂單為三聯式時，一併顯示統編與公司抬頭', status: 'skip', evidence: '⛔ 因 S2-AC1 未實作，本條無從驗' },
     ]
   },
   {
-    id: '311', title: '訂單追蹤：物流資訊', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '311', title: '訂單追蹤：物流資訊', status: 'partial', ac: '2/5 有問題', acPct: 40, acColor: 'partial',
     acs: [
-      { key: 'AC1', desc: '所有訂單詳情頁顯示「物流資訊」區塊，含寄送方式/物流單號/目前貨況/重要時間點', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC2', desc: '超商訂單付款成功後，物流單號 + 貨況自動帶入（綠界回傳值）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC3', desc: '宅配訂單狀態=待出貨時，物流單號可手動輸入儲存、目前貨況顯示「—」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC4', desc: '尚未付款訂單，物流資訊區塊欄位皆顯示「—」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC5', desc: '綠界物流建立失敗時，物流單號欄顯示「物流訂單建立失敗」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC1', desc: '所有訂單詳情頁顯示「物流資訊」區塊，含寄送方式/物流單號/目前貨況/重要時間點', status: 'partial', evidence: '2026-07-03 驗：SH2604220001 有「物流資訊」區塊，但只有【物流方式 / 客代＆材積 / 物流單號 / 收件地址】4 欄，**缺少 spec 要求的「目前貨況」+「重要時間點」2 欄**' },
+      { key: 'AC2', desc: '超商訂單付款成功後，物流單號 + 貨況自動帶入（綠界回傳值）', status: 'skip', evidence: '需超商已付款訂單測資（本次看的是宅配尚未付款）' },
+      { key: 'AC3', desc: '宅配訂單狀態=待出貨時，物流單號可手動輸入儲存、目前貨況顯示「—」', status: 'skip', evidence: '本次看到的宅配訂單狀態為「付款處理中/尚未付款」非「待出貨」，需另找測資' },
+      { key: 'AC4', desc: '尚未付款訂單，物流資訊區塊欄位皆顯示「—」', status: 'fail', evidence: '2026-07-03 驗：SH2604220001 狀態「尚未付款」但「客代＆材積」「物流單號」為**空欄**而非「—」；spec 明確要求以「—」呈現，UI 呈現不一致' },
+      { key: 'AC5', desc: '綠界物流建立失敗時，物流單號欄顯示「物流訂單建立失敗」', status: 'skip', evidence: '需綠界建單失敗測資' },
     ]
   },
   // ====== 原本已測 10 張 ======
