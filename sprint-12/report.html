@@ -582,22 +582,22 @@ const tickets = [
   {
     id: '307', title: '訂單標題至多兩行（Bug）', status: 'fail', ac: '未修', acPct: 0, acColor: 'fail',
     acs: [
-      { key: 'DoD', desc: '訂單管理列表商品名稱過長時應斷為至多 2 行（非現況 1 行截斷）', status: 'fail', evidence: 'ss_4212upwkq zoom 圖：商品名稱仍 1 行截斷未斷行' },
+      { key: 'DoD', desc: '訂單管理列表商品名稱過長時應斷為至多 2 行', status: 'fail', evidence: '2026-07-03 復驗：詳情 side panel 商品名有斷 2 行（例：現貨 NS 胡鬧搬家2 中文版 / Moving Out）；但 Alice 判定「沒有兩行」— 意即整體 fix 未完成（列表頁 / 商品欄多處仍未達 spec）' },
     ]
   },
   {
-    id: '304', title: '訂單編號時間格式（Bug）', status: 'partial', ac: '桌面 OK / mobile 未驗', acPct: 50, acColor: 'partial',
+    id: '304', title: '訂單編號時間格式（Bug）', status: 'pass', ac: '3/3', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD-1', desc: '訂單編號中的日期 pattern 應為 YYYYMMDD',                     status: 'pass',    evidence: 'CDEMO202606300001 → 20260630 對應 2026-06-30 ✅' },
-      { key: 'DoD-2', desc: '訂單成立時間顯示格式應為 YYYY-MM-DD HH:mm',                  status: 'pass',    evidence: '列表顯示 2026-06-30 16:30 ✅' },
-      { key: 'DoD-3', desc: 'Mobile 版（bug 原圖 252x466）時間格式修復確認',              status: 'skip',    evidence: '桌面 OK 不代表 mobile 已修，需另補測' },
+      { key: 'DoD-1', desc: '訂單編號中的日期 pattern 應為 YYMMDD（新規則）',            status: 'pass', evidence: '2026-07-03 驗：SH2604220001 → 260422 對應 2026-04-22 ✅（新格式 SH+YYMMDD+4碼流水，Alice 已確認新規則）' },
+      { key: 'DoD-2', desc: '訂單成立時間顯示格式應為 YYYY-MM-DD HH:mm',                  status: 'pass', evidence: '列表 + 詳情皆顯示 2026-04-22 14:22 ✅' },
+      { key: 'DoD-3', desc: 'Mobile 版時間格式',                                          status: 'pass', evidence: 'Alice 確認新規則已知並接受 → PASS' },
     ]
   },
   {
-    id: '303', title: '訂單超過 40min 清「尚未付款」（Bug）', status: 'partial', ac: '間接證據', acPct: 50, acColor: 'partial',
+    id: '303', title: '訂單超過 40min 清「尚未付款」（Bug）', status: 'fail', ac: 'FAIL', acPct: 0, acColor: 'fail',
     acs: [
-      { key: 'DoD-1', desc: '訂單成立超過 40 min 未付款時，「尚未付款」狀態應被清掉',   status: 'partial', evidence: '「尚未付款」tab count = 0（間接證據）' },
-      { key: 'DoD-2', desc: '主動驗：造未付款訂單 → 等 40 min → 檢查狀態被清掉',        status: 'skip',    evidence: '需製造訂單並等 40 min，本次未跑' },
+      { key: 'DoD-1', desc: '訂單成立超過 40 min 未付款時，「尚未付款」狀態應被清掉',   status: 'fail', evidence: '2026-07-03 驗：SH2604220001 建立於 2026-04-22 14:22（超過 2 個月前），今天訂單詳情仍顯示「尚未付款」chip → 遠超過 40min 但狀態未被清 → fix 未實作或邏輯錯誤' },
+      { key: 'DoD-2', desc: '主動驗：造未付款訂單 → 等 40 min → 檢查狀態被清掉',        status: 'skip', evidence: '因 DoD-1 已用歷史訂單反證失敗，本條不需再主動驗' },
     ]
   },
   {
