@@ -335,7 +335,7 @@
 
 <div class="verdict">
   <h2>🔴 不建議收 sprint</h2>
-  <p>2 張明確 Fail（285 分頁、307 標題兩行未修）＋新開 P1 admin 前端互動失效，影響 4 張票的 AC 覆蓋。</p>
+  <p>3 張 Fail（285 分頁、307 標題兩行、242 宅配）＋新增 <b>P0 BUG-06</b> 前台取貨方式全空，Blocked 掉 5 張票（242 / 243 / 269 / 271 / 290）。</p>
 </div>
 
 <h2>Sprint 進度總覽</h2>
@@ -400,6 +400,15 @@
 </table>
 
 <h2>Bug 清單</h2>
+
+<div class="bug-card p1" style="border-left-color:#dc2626;background:#fef2f2;">
+  <h3><span class="severity" style="background:#dc2626;color:white;">P0</span> BUG-S12-06 · 前台購物車取貨方式全部消失 <span style="font-size:12px;color:var(--muted);font-weight:400;">(2026-07-02 新發現)</span></h3>
+  <p><span class="label">現象：</span>進 <code>/cart</code>，「取貨方式」區塊完全空白 — 沒有 7-11、沒有全家、沒有宅配。DOM 上 <code>&lt;div role="radiogroup"&gt;</code> 存在但內容 empty。</p>
+  <p><span class="label">時序：</span>2026-06-30 測 271 時還有 7-11 / 全家兩個 radio；2026-07-02 全部消失。</p>
+  <p><span class="label">影響：</span>整個 checkout 主流程無法完成，Sprint 12 的 <b>242 / 243 / 269 / 271 / 290 (S1)</b> 全部 blocked。</p>
+  <p><span class="label">推測：</span>可能是 316 fix 改動了前台讀取物流的邏輯，或後端 shipping options API 回傳空陣列。</p>
+  <p><span class="label">建議：</span>P0 立即修，等這條修好前 5 張票的 QA 都無效。</p>
+</div>
 
 <div class="bug-card p1">
   <h3><span class="severity sev-p1">P1</span> BUG-S12-01 · Admin 前端互動全面失效</h3>
@@ -479,19 +488,19 @@ const STATUS_CHIP = {
 const tickets = [
   // ====== 新加入 sprint 12（尚未執行 QA）======
   {
-    id: '242', title: '【宅配】購物車 + 訂單追蹤 + 後台手動出貨', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '242', title: '【宅配】購物車 + 訂單追蹤 + 後台手動出貨', status: 'fail', ac: '1/5 Fail', acPct: 20, acColor: 'fail',
     acs: [
-      { key: 'AC1', desc: '購物車寄送方式新增「宅配」選項可選（前台）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC2', desc: '訂單追蹤頁物流方式可顯示「宅配」（前台）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC3', desc: '後台可選客代＆材積、手動輸入物流單號、顯示收件地址', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC4', desc: '點「出貨按鈕」後訂單狀態變「運送中」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
-      { key: 'AC5', desc: '全程手動、不接宅配 API（物流單號人工輸入、狀態人工切換）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC1', desc: '購物車寄送方式新增「宅配」選項可選（前台）', status: 'fail', evidence: '2026-07-02 驗：/cart 頁「取貨方式」radiogroup DOM 存在但完全空，連 7-11/全家都消失，宅配選項當然也沒有 → BUG-S12-06' },
+      { key: 'AC2', desc: '訂單追蹤頁物流方式可顯示「宅配」（前台）', status: 'skip', evidence: '⛔ blocked by BUG-06（無法建立宅配訂單）' },
+      { key: 'AC3', desc: '後台可選客代＆材積、手動輸入物流單號、顯示收件地址', status: 'skip', evidence: '⛔ blocked by BUG-06（無宅配訂單可測）' },
+      { key: 'AC4', desc: '點「出貨按鈕」後訂單狀態變「運送中」', status: 'skip', evidence: '⛔ blocked by BUG-06' },
+      { key: 'AC5', desc: '全程手動、不接宅配 API（物流單號人工輸入、狀態人工切換）', status: 'skip', evidence: '⛔ blocked by BUG-06' },
     ]
   },
   {
-    id: '243', title: '【購物車】超過 20,000 阻擋超取', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '243', title: '【購物車】超過 20,000 阻擋超取', status: 'skip', ac: '⛔ Blocked', acPct: 0, acColor: 'skip',
     acs: [
-      { key: 'AC1', desc: '購物車金額 > NT$20,000 時，7-11/全家 disabled、宅配自動選', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC1', desc: '購物車金額 > NT$20,000 時，7-11/全家 disabled、宅配自動選', status: 'skip', evidence: '⛔ blocked by BUG-06（取貨方式全空，本來就沒選項可 disabled）' },
       { key: 'AC2', desc: '停用提示文案「因購物車金額超過 NT$20,000，超商取貨已停用，請改選宅配到府。」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
       { key: 'AC3', desc: '超商取貨付款連動 disabled，僅能選信用卡/金融卡', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
       { key: 'AC4', desc: '金額回落 ≤ NT$20,000 後，超商恢復可選、提示消失', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
@@ -513,16 +522,16 @@ const tickets = [
     ]
   },
   {
-    id: '269', title: '【購物車】含「僅限宅配」商品停用超商', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '269', title: '【購物車】含「僅限宅配」商品停用超商', status: 'skip', ac: '⛔ Blocked', acPct: 0, acColor: 'skip',
     acs: [
-      { key: 'AC1', desc: '購物車含至少 1 筆「僅限宅配」商品時，7-11/全家 disabled、宅配自動選', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
+      { key: 'AC1', desc: '購物車含至少 1 筆「僅限宅配」商品時，7-11/全家 disabled、宅配自動選', status: 'skip', evidence: '⛔ blocked by BUG-06（取貨方式全空）' },
       { key: 'AC2', desc: '觸發停用時顯示紅字提示（比照 243 情境 C）', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
       { key: 'AC4', desc: '移除所有「僅限宅配」商品後，超商恢復可選、提示消失', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
       { key: 'AC5', desc: '邊界：同時滿足「金額 > 20,000」+「含僅限宅配」時，紅字商品優先於金額', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
     ]
   },
   {
-    id: '290', title: '前台購物車選發票類型 + 後台訂單追蹤顯示發票資訊', status: 'skip', ac: '未測', acPct: 0, acColor: 'skip',
+    id: '290', title: '前台購物車選發票類型 + 後台訂單追蹤顯示發票資訊', status: 'skip', ac: '⛔ Blocked (S1)', acPct: 0, acColor: 'skip',
     acs: [
       { key: 'S1-AC1', desc: '結帳發票區塊未選時，預設「二聯式發票」', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
       { key: 'S1-AC2', desc: '選「三聯式」時，統編或公司抬頭留空送出應擋下並顯示必填提示', status: 'skip', evidence: '新加入 sprint 12，尚未執行 QA' },
