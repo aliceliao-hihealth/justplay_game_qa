@@ -399,6 +399,15 @@
   <tbody id="tickets-body"></tbody>
 </table>
 
+<h2>Spec 變動紀錄（Sprint 12 期間確認）</h2>
+<div class="bug-card" style="border-left-color:#10b981;background:#ecfdf5;">
+  <h3 style="color:#065f46;">📋 SPEC-01 · 訂單編號規則更新</h3>
+  <p><span class="label">新規則：</span><code>SH + YYMMDD + 4碼流水</code>（例：<code>SH2604220001</code> = 2026-04-22 第 1 筆訂單，共 12 碼）</p>
+  <p><span class="label">舊規則（作廢）：</span><code>CDEMO + YYYYMMDD + 序號</code>（Sprint 11 前使用，共 13 碼）</p>
+  <p><span class="label">確認：</span>2026-07-03 by Alice — 新規則已知並接受</p>
+  <p><span class="label">建議同步更新：</span>memory <code>project_justplay_decisions.md</code> §訂單狀態/命名規則 · master spec 6.4 · 04-payment-logistics（訂單流程圖）</p>
+</div>
+
 <h2>Bug 清單</h2>
 
 <div class="bug-card p1" style="border-left-color:#dc2626;background:#fef2f2;">
