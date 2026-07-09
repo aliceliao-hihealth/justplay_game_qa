@@ -317,9 +317,51 @@
     resize: none;
   }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+
+  /* Sprint tabs (top nav) */
+  .sprint-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--border);
+    margin: 0 0 16px;
+    padding: 0;
+  }
+  .sprint-tab {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sprint-tab:hover { color: var(--text); background: #f5f5f4; }
+  .sprint-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: transparent;
+  }
+  .sprint-tab .badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: var(--border);
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .sprint-tab.active .badge { background: var(--accent); color: white; }
 </style>
 </head>
 <body>
+
+<nav class="sprint-tabs">
+  <a href="../sprint-12/report.html" class="sprint-tab active">Sprint 12 <span class="badge">20</span></a>
+  <a href="../sprint-13/report.html" class="sprint-tab">Sprint 13 <span class="badge">—</span></a>
+</nav>
 
 <h1>DT Sprint 12 · QA 報告</h1>
 <div class="meta">2026-07-01 · Alice 自測 · staging.justplaygame.com.tw · SOP v1.2</div>
