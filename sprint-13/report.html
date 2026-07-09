@@ -438,79 +438,6 @@
   <tbody id="tickets-body"></tbody>
 </table>
 
-<h2>Spec 變動紀錄（Sprint 12 期間確認）</h2>
-<div class="bug-card" style="border-left-color:#10b981;background:#ecfdf5;">
-  <h3 style="color:#065f46;">📋 SPEC-01 · 訂單編號規則更新</h3>
-  <p><span class="label">新規則：</span><code>SH + YYMMDD + 4碼流水</code>（例：<code>SH2604220001</code> = 2026-04-22 第 1 筆訂單，共 12 碼）</p>
-  <p><span class="label">舊規則（作廢）：</span><code>CDEMO + YYYYMMDD + 序號</code>（Sprint 11 前使用，共 13 碼）</p>
-  <p><span class="label">確認：</span>2026-07-03 by Alice — 新規則已知並接受</p>
-  <p><span class="label">建議同步更新：</span>memory <code>project_justplay_decisions.md</code> §訂單狀態/命名規則 · master spec 6.4 · 04-payment-logistics（訂單流程圖）</p>
-</div>
-
-<h2>Bug 清單</h2>
-
-<div class="bug-card p1" style="border-left-color:#dc2626;background:#fef2f2;">
-  <h3><span class="severity" style="background:#dc2626;color:white;">P0</span> BUG-S12-06 · 前台購物車取貨方式全部消失 <span style="font-size:12px;color:var(--muted);font-weight:400;">(2026-07-02 新發現)</span></h3>
-  <p><span class="label">現象：</span>進 <code>/cart</code>，「取貨方式」區塊完全空白 — 沒有 7-11、沒有全家、沒有宅配。DOM 上 <code>&lt;div role="radiogroup"&gt;</code> 存在但內容 empty。</p>
-  <p><span class="label">時序：</span>2026-06-30 測 271 時還有 7-11 / 全家兩個 radio；2026-07-02 全部消失。</p>
-  <p><span class="label">影響：</span>整個 checkout 主流程無法完成，Sprint 12 的 <b>242 / 243 / 269 / 271 / 290 (S1)</b> 全部 blocked。</p>
-  <p><span class="label">推測：</span>可能是 316 fix 改動了前台讀取物流的邏輯，或後端 shipping options API 回傳空陣列。</p>
-  <p><span class="label">建議：</span>P0 立即修，等這條修好前 5 張票的 QA 都無效。</p>
-</div>
-
-<div class="bug-card p1">
-  <h3><span class="severity sev-p1">P1</span> BUG-S12-01 · Admin 前端互動全面失效</h3>
-  <p><span class="label">現象：</span>後台所有 click 事件無反應（tab / 分頁 / 訂單編號連結 / 306 摺疊箭頭 / 側邊選單），但 console 無 JS error。可作用的僅：登入、URL 導航、hover。</p>
-  <p><span class="label">影響：</span>拖累 285 / 306 / 303 / 304 的 AC 覆蓋率；整個後台日常操作癱瘓。</p>
-  <p><span class="label">環境：</span><code>staging /admin/*</code></p>
-  <p><span class="label">建議：</span>前端查 hydration / event delegation；當 sprint 收尾阻擋條件。</p>
-</div>
-
-<div class="bug-card p1">
-  <h3><span class="severity sev-p1">P1</span> BUG-S12-03 · Admin 分頁載入白畫面</h3>
-  <p><span class="label">現象：</span><code>/admin/orders</code> 和 <code>/admin/products/new</code> 直接進去是全黑畫面，無任何內容渲染。</p>
-  <p><span class="label">建議：</span>釐清正確 route 或補 redirect。</p>
-</div>
-
-<div class="bug-card p2">
-  <h3><span class="severity sev-p2">P2</span> BUG-S12-02 · 307 標題兩行未修復</h3>
-  <p><span class="label">現象：</span>訂單管理列表商品名稱仍為 1 行 + 過長截斷，未依 fix 改為至多 2 行。</p>
-  <p><span class="label">建議：</span>Reject 307 修復，退回 In Progress 給 eddy。</p>
-</div>
-
-<div class="bug-card p2">
-  <h3><span class="severity sev-p2">P2</span> BUG-S12-04 · 前台購物車 QA 資料異常（測試環境）</h3>
-  <p><span class="label">現象：</span>前台加 mario 商品進購物車卻顯示成「NS2 晚安宇宙」+「規格已不販售」，Step1 無法通過 → 卡住 271 測試。</p>
-  <p><span class="label">建議：</span>依 Confluence <a href="https://hihealthtw.atlassian.net/wiki/spaces/JP1/pages/edit-v2/157319178" target="_blank">157319178</a> 在 staging setup QA-A~F 基準商品。</p>
-</div>
-
-<h2>退場條件（SOP §6）</h2>
-<div class="exit">
-  <div class="exit-item"><span class="exit-icon">❌</span>所有 ticket 核心 AC Pass<span class="exit-note">285 / 307 明確 Fail</span></div>
-  <div class="exit-item"><span class="exit-icon">❌</span>E2E-1 Happy Path 端到端 ≥ 3 次<span class="exit-note">商品缺貨 + Step2 進不去</span></div>
-  <div class="exit-item"><span class="exit-icon">⏭️</span>信件用「訂單編號」<span class="exit-note">本 sprint 無信件 ticket</span></div>
-  <div class="exit-item"><span class="exit-icon">❌</span>無 P0 / P1 新 bug 殘留<span class="exit-note">BUG-01 / BUG-03 P1 新增</span></div>
-  <div class="exit-item"><span class="exit-icon">⏳</span>P2/P3 bug 進下 sprint backlog<span class="exit-note">BUG-02 / BUG-04 需開票</span></div>
-  <div class="exit-item"><span class="exit-icon">❌</span>本 sprint 主要阻擋 bug 修復通過<span class="exit-note">307 未修</span></div>
-</div>
-
-<h2>Action Items</h2>
-<table class="actions">
-  <thead>
-    <tr><th class="col-id">#</th><th class="col-owner">Owner</th><th>動作</th><th class="col-when">期限</th></tr>
-  </thead>
-  <tbody>
-    <tr><td class="col-id">A1</td><td class="col-owner">eddy</td><td>306 AC2 摺疊是否已實作？若已實作看是否被 BUG-01 拖累</td><td class="col-when">今日</td></tr>
-    <tr><td class="col-id">A2</td><td class="col-owner">eddy</td><td>307 標題兩行 fix 退回 In Progress，實際改 CSS</td><td class="col-when">今日</td></tr>
-    <tr><td class="col-id">A3</td><td class="col-owner">eddy / Roman</td><td>排查 BUG-01：admin 頁面 click event 全失效</td><td class="col-when">P1 立即</td></tr>
-    <tr><td class="col-id">A4</td><td class="col-owner">eddy</td><td>304 mobile 版檢查（bug 原圖是 mobile）</td><td class="col-when">補測</td></tr>
-    <tr><td class="col-id">A5</td><td class="col-owner">albert</td><td>275 提供 csv 樣本 + 匯入 UI 路徑</td><td class="col-when">下 sprint 前</td></tr>
-    <tr><td class="col-id">A6</td><td class="col-owner">Alice</td><td>QA-A~F 基準商品在 staging setup（Confluence 157319178）</td><td class="col-when">本 sprint 內</td></tr>
-    <tr><td class="col-id">A7</td><td class="col-owner">Reverie</td><td>349 等 parent 242 完成後一起 RFT</td><td class="col-when">下 sprint</td></tr>
-    <tr><td class="col-id">A8</td><td class="col-owner">Joe</td><td>303「未知狀態」chip 命名對照 Figma 2153-27248</td><td class="col-when">補查</td></tr>
-  </tbody>
-</table>
-
 <div class="modal-mask" id="export-modal" onclick="if(event.target===this)hideExport()">
   <div class="modal">
     <h3>📋 匯出手動測試紀錄（貼給 Claude）</h3>
@@ -537,19 +464,19 @@ const tickets = [
   {
     id: '375', title: '前台搜尋：兩個關鍵字，找不到交集（Story）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD', desc: '前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）', status: 'pass', evidence: '2026-07-09 重驗：搜「mario switch」→ 8+ 筆結果（Super Mario 派對 / 奧德賽 / Mario Kart 8 / Maker 2 / Tennis Ace / 特典等），多關鍵字搜尋 fix 仍有效' },
+      { key: 'DoD', desc: '前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）', status: 'pass', evidence: '【我測到】搜「mario switch」→ 8+ 筆結果（Super Mario 派對 / 奧德賽 / Mario Kart 8 / Maker 2 / Tennis Ace / 特典等）。 【Alice 判定 ✅ PASS】多關鍵字搜尋正確。' },
     ]
   },
   {
     id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致', status: 'pass', evidence: '2026-07-09 Alice 判定 PASS：後台 dropdown「新增時間：新到舊」與前台 3 button 各自與 UI/Figma 一致（我原以為要「前後台同一種 UI」而誤判 FAIL）' },
+      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致', status: 'pass', evidence: '【我測到】後台顯示 dropdown「新增時間：新到舊」；前台顯示 3 button「最新上架 / 價格：低到高 / 價格：高到低」。 【Alice 判定 ✅ PASS】後台對到後台 UI、前台對到前台 UI，各自與自己那層 Figma 一致即通過（Claude 原誤解為「前後台要用同一種 UI」）。' },
     ]
   },
   {
     id: '378', title: '商品總覽應 2 行（現況 1 行截斷）（Bug）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD', desc: '後台商品總覽的商品名稱過長時應斷為至多 2 行', status: 'pass', evidence: '2026-07-09 Alice 判定 PASS：「至多兩行」= 上限，1 行或 2 行都符合（我原以為必須斷 2 行、把 1 行截斷當 FAIL 是誤解 spec）' },
+      { key: 'DoD', desc: '後台商品總覽的商品名稱過長時應斷為至多 2 行', status: 'pass', evidence: '【我測到】後台商品總覽首屏商品名（例：「【就是要玩】附贈DLC現貨 NS Switch 異度神劍2 黃金之國伊拉 中文版 異域神劍2 黃金國度伊拉」）顯示為 1 行截斷。 【Alice 判定 ✅ PASS】「至多兩行」= 上限，1 行或 2 行皆符合（Claude 原誤解為「必須斷 2 行才算通過」）。' },
     ]
   },
 ];
@@ -802,20 +729,8 @@ function buildExport() {
     md += `\n`;
   });
 
-  md += `---\n\n## Bug 清單（自動判定）\n\n`;
-  md += `以下皆為 Sprint 12 未修、延續到 Sprint 13 的 bug：\n`;
-  md += `- **BUG-S12-06** [P0] 前台購物車取貨方式全部消失（未修 → 擋掉 242/243/269/271/290 重測）\n`;
-  md += `- **BUG-S12-01** [P1] Admin 前端互動全面失效\n`;
-  md += `- **BUG-S12-03** [P1] Admin 分頁載入白畫面\n`;
-  md += `- **BUG-S12-02** [P2] 307 標題兩行未修復\n`;
-  md += `- **BUG-S12-04** [P2] 前台購物車 QA 資料異常\n\n`;
-
-  md += `## 退場條件（Sprint 13 剛開始，暫不評估）\n\n`;
-  md += `- ⏳ Sprint 13 剛啟動，退場評估等 sprint 末再跑\n`;
-  md += `- ⚠️ 但 Sprint 12 遺留 P0 BUG-06（前台取貨方式全空）仍為前置 blocker\n\n`;
-
-  md += `## 給 Claude 的提示\n\n`;
-  md += `這是 DT Sprint 13 QA 手動測試紀錄。若 Alice 貼給你，請針對「備註」欄的問題協助釐清、依 hi-health-qa-sop §5.1 判斷 bug 嚴重度、或評估退場條件是否可通過。\n`;
+  md += `---\n\n## 給 Claude 的提示\n\n`;
+  md += `這是 DT Sprint 13 QA 手動測試紀錄。每張票的 evidence 欄含「【我測到】客觀觀察」+「【Alice 判定】最終結論」兩層。若 Alice 貼給你，優先看 Alice 判定；「我測到」是備援證據。\n`;
   return md;
 }
 
