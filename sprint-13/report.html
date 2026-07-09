@@ -380,34 +380,60 @@
   <p>375 · 148 · 378 三張皆通過驗收（Alice 判定）。Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。</p>
 </div>
 
+<style>
+  .summary-headline { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .summary-icon { font-size: 44px; line-height: 1; }
+  .summary-text { flex: 1; }
+  .summary-title { font-size: 22px; font-weight: 700; line-height: 1.2; }
+  .summary-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .summary-bar { height: 20px; margin-bottom: 20px; }
+  .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 6px; font-weight: 600; letter-spacing: 0.3px; }
+  .stat-card.pass .stat-num { color: var(--pass); }
+  .stat-card.fail .stat-num { color: var(--fail); }
+  .stat-card.partial .stat-num { color: var(--partial); }
+  .stat-card.skip .stat-num { color: var(--skip); }
+  .stat-card.pass { background: #ecfdf5; border-color: #a7f3d0; }
+</style>
+
 <h2>Sprint 進度總覽</h2>
 <div class="overall">
-  <div class="overall-row">
-    <div class="overall-label">3 張 RFT 完成度</div>
-    <div class="bar">
-      <div class="bar-multi" style="width: 100%">
-        <div class="bar-seg bar-pass" style="width: 100%"></div>
-      </div>
+  <div class="summary-headline">
+    <div class="summary-icon">🟢</div>
+    <div class="summary-text">
+      <div class="summary-title" style="color: var(--pass);">全通過 · 3 張</div>
+      <div class="summary-sub">Sprint 13 · 2026-07-09 執行</div>
     </div>
-    <div class="overall-value">100%</div>
   </div>
-  <div class="overall-row">
-    <div class="overall-label">AC 通過率（3 張加權）</div>
-    <div class="bar"><div class="bar-fill bar-pass" style="width: 100%"></div></div>
-    <div class="overall-value">100%</div>
+  <div class="bar summary-bar">
+    <div class="bar-multi" style="width: 100%">
+      <div class="bar-seg bar-pass" style="width: 100%"></div>
+    </div>
   </div>
-  <div class="overall-row">
-    <div class="overall-label">退場條件（6 項）</div>
-    <div class="bar"><div class="bar-fill bar-skip" style="width: 0%"></div></div>
-    <div class="overall-value">—</div>
-  </div>
-  <div class="overall-row" style="grid-template-columns: 200px 1fr; margin-top: 10px; font-size: 12px; color: var(--muted);">
-    <div></div>
-    <div>
-      <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 3
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--fail);border-radius:2px;vertical-align:middle;"></span> FAIL 0
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 0
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 待重測 0
+  <div class="stat-cards">
+    <div class="stat-card pass">
+      <div class="stat-num">3</div>
+      <div class="stat-label">✅ PASS</div>
+    </div>
+    <div class="stat-card fail">
+      <div class="stat-num">0</div>
+      <div class="stat-label">🔴 FAIL</div>
+    </div>
+    <div class="stat-card partial">
+      <div class="stat-num">0</div>
+      <div class="stat-label">🟡 PARTIAL</div>
+    </div>
+    <div class="stat-card skip">
+      <div class="stat-num">0</div>
+      <div class="stat-label">⏭️ 待測</div>
     </div>
   </div>
 </div>
