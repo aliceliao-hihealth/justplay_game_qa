@@ -58,15 +58,14 @@
   .toolbar .status.saved { color: var(--pass); }
 
   .verdict {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-left: 6px solid var(--fail);
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-left: 6px solid var(--pass);
     padding: 16px 20px;
     border-radius: 8px;
     margin-bottom: 24px;
   }
-  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #92400e; font-size: 18px; }
-  .verdict { background: #fef3c7; border: 1px solid #fde68a; border-left: 6px solid #f59e0b; }
+  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #065f46; font-size: 18px; }
   .verdict p { margin: 4px 0 0; font-size: 14px; }
 
   .overall {
@@ -377,8 +376,8 @@
 </div>
 
 <div class="verdict">
-  <h2>🟡 Sprint 13 剛開始</h2>
-  <p>目前 3 張 RFT（148 · 375 · 378，都是 Sprint 12 進 RFT 再度出現）。Sprint 12 未修的 BUG-06 / BUG-01 仍為前置 blocker。</p>
+  <h2>🟢 Sprint 13：3 張全 PASS</h2>
+  <p>375 · 148 · 378 三張皆通過驗收（Alice 判定）。Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。</p>
 </div>
 
 <h2>Sprint 進度總覽</h2>
@@ -387,17 +386,15 @@
     <div class="overall-label">3 張 RFT 完成度</div>
     <div class="bar">
       <div class="bar-multi" style="width: 100%">
-        <div class="bar-seg bar-pass" style="width: 33%"></div>
-        <div class="bar-seg bar-partial" style="width: 33%"></div>
-        <div class="bar-seg bar-skip" style="width: 34%"></div>
+        <div class="bar-seg bar-pass" style="width: 100%"></div>
       </div>
     </div>
-    <div class="overall-value">67%</div>
+    <div class="overall-value">100%</div>
   </div>
   <div class="overall-row">
     <div class="overall-label">AC 通過率（3 張加權）</div>
-    <div class="bar"><div class="bar-fill bar-pass" style="width: 33%"></div></div>
-    <div class="overall-value">33%</div>
+    <div class="bar"><div class="bar-fill bar-pass" style="width: 100%"></div></div>
+    <div class="overall-value">100%</div>
   </div>
   <div class="overall-row">
     <div class="overall-label">退場條件（6 項）</div>
@@ -407,10 +404,10 @@
   <div class="overall-row" style="grid-template-columns: 200px 1fr; margin-top: 10px; font-size: 12px; color: var(--muted);">
     <div></div>
     <div>
-      <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 1
+      <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 3
       <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--fail);border-radius:2px;vertical-align:middle;"></span> FAIL 0
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 1
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 待重測 1
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 0
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 待重測 0
     </div>
   </div>
 </div>
@@ -544,15 +541,15 @@ const tickets = [
     ]
   },
   {
-    id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'partial', ac: '前台已看 / 後台待驗', acPct: 50, acColor: 'partial',
+    id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致（前後台統一）', status: 'partial', evidence: '2026-07-09 前台已驗：仍為 3 個 button「最新上架 / 價格：低到高 / 價格：高到低」（跟 sprint 12 一樣）。後台是否還是 dropdown「新增時間：新到舊」需 Alice 登入後台重驗；若仍是 dropdown = FAIL' },
+      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致', status: 'pass', evidence: '2026-07-09 Alice 判定 PASS：後台 dropdown「新增時間：新到舊」與前台 3 button 各自與 UI/Figma 一致（我原以為要「前後台同一種 UI」而誤判 FAIL）' },
     ]
   },
   {
-    id: '378', title: '商品總覽應 2 行（現況 1 行截斷）（Bug）', status: 'skip', ac: '待重測', acPct: 0, acColor: 'skip',
+    id: '378', title: '商品總覽應 2 行（現況 1 行截斷）（Bug）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD', desc: '後台商品總覽的商品名稱過長時應斷為至多 2 行', status: 'skip', evidence: 'Sprint 12 已判 FAIL（仍 1 行截斷），本 sprint 待重測是否已修' },
+      { key: 'DoD', desc: '後台商品總覽的商品名稱過長時應斷為至多 2 行', status: 'pass', evidence: '2026-07-09 Alice 判定 PASS：「至多兩行」= 上限，1 行或 2 行都符合（我原以為必須斷 2 行、把 1 行截斷當 FAIL 是誤解 spec）' },
     ]
   },
 ];
@@ -770,7 +767,7 @@ function showSaved() {
 function buildExport() {
   const now = new Date();
   const ts = now.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-  let md = `# Sprint 12 QA 手動測試紀錄\n\n`;
+  let md = `# Sprint 13 QA 手動測試紀錄\n\n`;
   md += `**匯出時間**：${ts}\n`;
   md += `**執行**：Alice · staging.justplaygame.com.tw\n\n`;
   const doneTickets = tickets.filter(t => state[t.id] && state[t.id].done).length;
@@ -806,19 +803,19 @@ function buildExport() {
   });
 
   md += `---\n\n## Bug 清單（自動判定）\n\n`;
+  md += `以下皆為 Sprint 12 未修、延續到 Sprint 13 的 bug：\n`;
+  md += `- **BUG-S12-06** [P0] 前台購物車取貨方式全部消失（未修 → 擋掉 242/243/269/271/290 重測）\n`;
   md += `- **BUG-S12-01** [P1] Admin 前端互動全面失效\n`;
+  md += `- **BUG-S12-03** [P1] Admin 分頁載入白畫面\n`;
   md += `- **BUG-S12-02** [P2] 307 標題兩行未修復\n`;
-  md += `- **BUG-S12-03** [P1] Admin 分頁載入白畫面（/admin/orders、/admin/products/new）\n`;
   md += `- **BUG-S12-04** [P2] 前台購物車 QA 資料異常\n\n`;
 
-  md += `## 退場條件\n\n`;
-  md += `- ❌ 所有 ticket 核心 AC Pass（285 / 307 Fail）\n`;
-  md += `- ❌ E2E-1 Happy Path 未完成\n`;
-  md += `- ❌ 無 P0 / P1 新 bug 殘留（BUG-01 / BUG-03 新增）\n`;
-  md += `- ❌ 本 sprint 主要阻擋 bug 修復通過（307 未修）\n\n`;
+  md += `## 退場條件（Sprint 13 剛開始，暫不評估）\n\n`;
+  md += `- ⏳ Sprint 13 剛啟動，退場評估等 sprint 末再跑\n`;
+  md += `- ⚠️ 但 Sprint 12 遺留 P0 BUG-06（前台取貨方式全空）仍為前置 blocker\n\n`;
 
   md += `## 給 Claude 的提示\n\n`;
-  md += `這是 DT Sprint 12 QA 手動測試紀錄。若 Alice 貼給你，請針對「備註」欄的問題協助釐清、依 hi-health-qa-sop §5.1 判斷 bug 嚴重度、或評估退場條件是否可通過。\n`;
+  md += `這是 DT Sprint 13 QA 手動測試紀錄。若 Alice 貼給你，請針對「備註」欄的問題協助釐清、依 hi-health-qa-sop §5.1 判斷 bug 嚴重度、或評估退場條件是否可通過。\n`;
   return md;
 }
 
