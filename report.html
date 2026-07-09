@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>DT Sprint 13 QA 報告</title>
+<style>
+  :root {
+    --pass: #10b981;
+    --fail: #ef4444;
+    --partial: #f59e0b;
+    --skip: #94a3b8;
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+    --accent: #c8a45c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    line-height: 1.6;
+  }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .meta { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; border-left: 4px solid var(--accent); padding-left: 12px; }
+
+  /* Sprint tabs */
+  .sprint-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--border);
+    margin: 0 0 16px;
+    padding: 0;
+  }
+  .sprint-tab {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sprint-tab:hover { color: var(--text); background: #f5f5f4; }
+  .sprint-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: transparent;
+  }
+  .sprint-tab .badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: var(--border);
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .sprint-tab.active .badge { background: var(--accent); color: white; }
+
+  .empty-hint {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty-hint h2 {
+    color: var(--text);
+    border: none;
+    padding: 0;
+    margin: 0 0 12px;
+    font-size: 18px;
+  }
+  .empty-hint p { margin: 4px 0; font-size: 14px; }
+  .empty-hint code {
+    background: #f5f5f4;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .empty-hint .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+
+  a { color: #0369a1; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav class="sprint-tabs">
+  <a href="../sprint-12/report.html" class="sprint-tab">Sprint 12 <span class="badge">20</span></a>
+  <a href="../sprint-13/report.html" class="sprint-tab active">Sprint 13 <span class="badge">—</span></a>
+</nav>
+
+<h1>DT Sprint 13 · QA 報告</h1>
+<div class="meta">2026-07-09 · Alice 自測 · staging.justplaygame.com.tw · SOP v1.2</div>
+
+<div class="empty-hint">
+  <div class="icon">📋</div>
+  <h2>Sprint 13 尚未盤點 RFT</h2>
+  <p>此 sprint 才剛開始，尚未有 ticket 進入 Ready for Test 階段。</p>
+  <p>當有 RFT 票時，貼給我，我會依 <code>hi-health-qa-sop</code> 逐條 AC 加進報告並開始驗收。</p>
+  <p style="margin-top:20px;">
+    <a href="../sprint-12/report.html">← 回到 Sprint 12 報告</a>
+  </p>
+</div>
+
+<h2>快速對照 Sprint 12 結論</h2>
+<div class="empty-hint" style="text-align:left; padding: 20px 24px;">
+  <p style="margin:4px 0;"><strong>Sprint 12 上線建議</strong>：🔴 不建議收</p>
+  <p style="margin:4px 0;"><strong>PASS</strong>：4 張（274 · 284 · 304 · 375）</p>
+  <p style="margin:4px 0;"><strong>FAIL</strong>：8 張（285 · 307 · 242 · 290 · 303 · 316 · 148 · 378）</p>
+  <p style="margin:4px 0;"><strong>PARTIAL</strong>：2 張（306 · 311）</p>
+  <p style="margin:4px 0;"><strong>Blocked</strong>：3 張（243 · 269 · 271）</p>
+  <p style="margin:4px 0;"><strong>P0/P1 Bug 未修</strong>：BUG-06 前台取貨方式全空、BUG-01 Admin 互動失效、BUG-03 白畫面</p>
+  <p style="margin:12px 0 0;"><strong>Sprint 13 建議優先處理</strong>：先修 BUG-06 讓 checkout 通路恢復，再重測 242 / 243 / 269 / 271 / 290 五張 blocked 票。</p>
+</div>
+
+</body>
+</html>
