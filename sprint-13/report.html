@@ -387,15 +387,17 @@
     <div class="overall-label">3 張 RFT 完成度</div>
     <div class="bar">
       <div class="bar-multi" style="width: 100%">
-        <div class="bar-seg bar-skip" style="width: 100%"></div>
+        <div class="bar-seg bar-pass" style="width: 33%"></div>
+        <div class="bar-seg bar-partial" style="width: 33%"></div>
+        <div class="bar-seg bar-skip" style="width: 34%"></div>
       </div>
     </div>
-    <div class="overall-value">0%</div>
+    <div class="overall-value">67%</div>
   </div>
   <div class="overall-row">
     <div class="overall-label">AC 通過率（3 張加權）</div>
-    <div class="bar"><div class="bar-fill bar-pass" style="width: 0%"></div></div>
-    <div class="overall-value">0%</div>
+    <div class="bar"><div class="bar-fill bar-pass" style="width: 33%"></div></div>
+    <div class="overall-value">33%</div>
   </div>
   <div class="overall-row">
     <div class="overall-label">退場條件（6 項）</div>
@@ -405,10 +407,10 @@
   <div class="overall-row" style="grid-template-columns: 200px 1fr; margin-top: 10px; font-size: 12px; color: var(--muted);">
     <div></div>
     <div>
-      <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 0
+      <span style="display:inline-block;width:10px;height:10px;background:var(--pass);border-radius:2px;vertical-align:middle;"></span> PASS 1
       <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--fail);border-radius:2px;vertical-align:middle;"></span> FAIL 0
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 0
-      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 待重測 3
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--partial);border-radius:2px;vertical-align:middle;"></span> PARTIAL 1
+      <span style="margin-left:16px;display:inline-block;width:10px;height:10px;background:var(--skip);border-radius:2px;vertical-align:middle;"></span> 待重測 1
     </div>
   </div>
 </div>
@@ -536,15 +538,15 @@ const STATUS_CHIP = {
 
 const tickets = [
   {
-    id: '375', title: '前台搜尋：兩個關鍵字，找不到交集（Story）', status: 'skip', ac: '待重測', acPct: 0, acColor: 'skip',
+    id: '375', title: '前台搜尋：兩個關鍵字，找不到交集（Story）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
-      { key: 'DoD', desc: '前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）', status: 'skip', evidence: 'Sprint 12 已判 PASS（搜「mario switch」8+ 筆）；再進 sprint 13 = 又有變動，待重測' },
+      { key: 'DoD', desc: '前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）', status: 'pass', evidence: '2026-07-09 重驗：搜「mario switch」→ 8+ 筆結果（Super Mario 派對 / 奧德賽 / Mario Kart 8 / Maker 2 / Tennis Ace / 特典等），多關鍵字搜尋 fix 仍有效' },
     ]
   },
   {
-    id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'skip', ac: '待重測', acPct: 0, acColor: 'skip',
+    id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'partial', ac: '前台已看 / 後台待驗', acPct: 50, acColor: 'partial',
     acs: [
-      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致（前後台統一）', status: 'skip', evidence: 'Sprint 12 已判 FAIL（後台「新增時間：新到舊」dropdown vs 前台 3 button），本 sprint 待重測是否已修' },
+      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致（前後台統一）', status: 'partial', evidence: '2026-07-09 前台已驗：仍為 3 個 button「最新上架 / 價格：低到高 / 價格：高到低」（跟 sprint 12 一樣）。後台是否還是 dropdown「新增時間：新到舊」需 Alice 登入後台重驗；若仍是 dropdown = FAIL' },
     ]
   },
   {
