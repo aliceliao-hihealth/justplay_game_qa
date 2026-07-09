@@ -341,7 +341,7 @@
 <h2>Sprint 進度總覽</h2>
 <div class="overall">
   <div class="overall-row">
-    <div class="overall-label">17 張 RFT 完成度</div>
+    <div class="overall-label">20 張 RFT 完成度</div>
     <div class="bar">
       <div class="bar-multi" style="width: 100%">
         <div class="bar-seg bar-pass" style="width: 6%"></div>
@@ -377,12 +377,12 @@
   <div class="label">✅ 我手動確認完成</div>
   <div class="bar"><div class="bar-fill bar-pass" id="manual-bar" style="width: 0%"></div></div>
   <div class="value">
-    <div>票 <span id="manual-count">0</span>/17</div>
+    <div>票 <span id="manual-count">0</span>/20</div>
     <div style="font-size:11px;font-weight:400;">AC <span id="manual-ac-count">0</span>/<span id="manual-ac-total">0</span></div>
   </div>
 </div>
 
-<h2>17 張 RFT 單票結果</h2>
+<h2>20 張 RFT 單票結果</h2>
 <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
 <table class="tickets">
   <thead>
@@ -495,6 +495,25 @@ const STATUS_CHIP = {
 };
 
 const tickets = [
+  // ====== 2026-07-07 追加驗收 3 張 ======
+  {
+    id: '378', title: '商品總覽應 2 行（現況 1 行截斷）（Bug）', status: 'fail', ac: '未修', acPct: 0, acColor: 'fail',
+    acs: [
+      { key: 'DoD', desc: '後台商品總覽的商品名稱過長時應斷為至多 2 行（非現況 1 行截斷）', status: 'fail', evidence: '2026-07-07 驗：後台 /admin/products/list 首屏商品名（例：「【就是要玩】附贈DLC現貨 NS Switch 異度神劍2 黃金之國伊拉 中文版 異域神劍2 黃金國度伊拉」）仍為 1 行截斷、未斷 2 行。fix 未完成' },
+    ]
+  },
+  {
+    id: '375', title: '前台搜尋：兩個關鍵字，找不到交集', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
+    acs: [
+      { key: 'DoD', desc: '前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）', status: 'pass', evidence: '2026-07-07 驗：搜「mario switch」→ 8+ 筆結果（Mario 相關的 Switch 遊戲、周邊）；搜「mario」單一關鍵字也 8+ 筆。fix 有效，多關鍵字搜得到' },
+    ]
+  },
+  {
+    id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'fail', ac: 'FAIL', acPct: 0, acColor: 'fail',
+    acs: [
+      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致（前後台統一）', status: 'fail', evidence: '2026-07-07 驗：後台商品總覽排序 dropdown 顯示「新增時間：新到舊」；前台商品列表用 3 個 button「最新上架 / 價格：低到高 / 價格：高到低」。**前後台文字不同 + UI 形式不同（dropdown vs button）**，未達 spec 要求' },
+    ]
+  },
   // ====== 新加入 sprint 12（尚未執行 QA）======
   {
     id: '242', title: '【宅配】購物車 + 訂單追蹤 + 後台手動出貨', status: 'fail', ac: '1/5 Fail', acPct: 20, acColor: 'fail',
