@@ -1,0 +1,71 @@
+{
+  "sprintLabel": "DT Sprint 13",
+  "sopVersion": "v1.3",
+  "firstTestDate": "2026-07-09",
+  "lastSyncDate": "2026-07-13",
+  "note": "Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。",
+  "pending": [
+    {
+      "id": "376",
+      "title": "後台：[商品總覽] 搜尋兩個關鍵字，找不到交集；實際上有該產品（Bug）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "後台商品總覽搜尋多個關鍵字時，應能找到符合所有關鍵字的商品（375 的後台版）",
+          "status": "skip",
+          "evidence": "【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 Joe），待 Alice 驗測。"
+        }
+      ]
+    },
+    {
+      "id": "392",
+      "title": "購物車，若只能宅配的顯示方式，需與 UI 相同（Bug）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "購物車內商品僅能宅配時，顯示方式需與 UI 相同。與 269 兩個停用條件同時成立時：先顯示「269-商品僅能宅配」，再顯示「訂單超過 20,000」",
+          "status": "skip",
+          "evidence": "【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。"
+        }
+      ]
+    }
+  ],
+  "passed": [
+    {
+      "id": "375",
+      "title": "前台搜尋：兩個關鍵字，找不到交集（Story）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）",
+          "status": "pass",
+          "evidence": "【我測到】搜「mario switch」→ 8+ 筆結果（Super Mario 派對 / 奧德賽 / Mario Kart 8 / Maker 2 / Tennis Ace / 特典等）。 【Alice 判定 ✅ PASS】多關鍵字搜尋正確。"
+        }
+      ]
+    },
+    {
+      "id": "148",
+      "title": "【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致",
+          "status": "pass",
+          "evidence": "【我測到】後台顯示 dropdown「新增時間：新到舊」；前台顯示 3 button「最新上架 / 價格：低到高 / 價格：高到低」。 【Alice 判定 ✅ PASS】後台對到後台 UI、前台對到前台 UI，各自與自己那層 Figma 一致即通過（Claude 原誤解為「前後台要用同一種 UI」）。"
+        }
+      ]
+    },
+    {
+      "id": "378",
+      "title": "商品總覽應 2 行（現況 1 行截斷）（Bug）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "後台商品總覽的商品名稱過長時應斷為至多 2 行",
+          "status": "pass",
+          "evidence": "【我測到】後台商品總覽首屏商品名（例：「【就是要玩】附贈DLC現貨 NS Switch 異度神劍2 黃金之國伊拉 中文版 異域神劍2 黃金國度伊拉」）顯示為 1 行截斷。 【Alice 判定 ✅ PASS】「至多兩行」= 上限，1 行或 2 行皆符合（Claude 原誤解為「必須斷 2 行才算通過」）。"
+        }
+      ]
+    }
+  ]
+}

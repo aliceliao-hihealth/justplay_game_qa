@@ -58,15 +58,19 @@
   .toolbar .status.saved { color: var(--pass); }
 
   .verdict {
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    border-left: 6px solid var(--partial);
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-left: 6px solid var(--pass);
     padding: 16px 20px;
     border-radius: 8px;
     margin-bottom: 24px;
   }
-  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #92400e; font-size: 18px; }
+  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #065f46; font-size: 18px; }
   .verdict p { margin: 4px 0 0; font-size: 14px; }
+  .verdict.tone-partial { background: #fffbeb; border-color: #fde68a; border-left-color: var(--partial); }
+  .verdict.tone-partial h2 { color: #92400e; }
+  .verdict.tone-fail { background: #fef2f2; border-color: #fecaca; border-left-color: var(--fail); }
+  .verdict.tone-fail h2 { color: #991b1b; }
 
   .overall {
     background: var(--card);
@@ -75,15 +79,6 @@
     padding: 20px 24px;
     margin-bottom: 24px;
   }
-  .overall-row {
-    display: grid;
-    grid-template-columns: 200px 1fr 60px;
-    gap: 16px; align-items: center;
-    margin-bottom: 10px;
-  }
-  .overall-row:last-child { margin-bottom: 0; }
-  .overall-label { font-size: 14px; color: var(--muted); }
-  .overall-value { font-weight: 600; text-align: right; }
 
   .bar {
     height: 12px;
@@ -200,7 +195,6 @@
   tr.row-done { background: #f0fdf4; }
   tr.row-done > td { color: #065f46; }
 
-  /* AC sub-table (nested inside expanded row) */
   tr.ac-container > td {
     background: #fafaf9;
     padding: 0;
@@ -230,61 +224,6 @@
   table.ac-table .col-ac-note { width: 260px; }
   table.ac-table .ac-desc { color: var(--text); line-height: 1.5; }
   table.ac-table tr.ac-done { background: #f0fdf4; }
-
-  .bug-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-left: 5px solid;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
-  }
-  .bug-card.p1 { border-left-color: var(--fail); }
-  .bug-card.p2 { border-left-color: var(--partial); }
-  .bug-card h3 { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
-  .severity {
-    padding: 2px 8px; border-radius: 4px;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
-  }
-  .sev-p1 { background: var(--fail); color: white; }
-  .sev-p2 { background: var(--partial); color: white; }
-  .bug-card p { margin: 6px 0; font-size: 14px; }
-  .bug-card .label { color: var(--muted); font-size: 12px; margin-right: 4px; }
-
-  table.actions {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--card);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    font-size: 14px;
-  }
-  table.actions thead { background: #f5f5f4; color: var(--muted); font-size: 13px; }
-  table.actions th, table.actions td {
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  table.actions tbody tr:last-child td { border-bottom: none; }
-  table.actions .col-id { width: 40px; font-weight: 600; color: var(--muted); }
-  table.actions .col-owner { width: 100px; font-weight: 600; }
-  table.actions .col-when { width: 120px; color: var(--muted); font-size: 13px; }
-
-  .exit {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-  }
-  .exit-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 0; font-size: 14px;
-    border-bottom: 1px dashed var(--border);
-  }
-  .exit-item:last-child { border-bottom: none; }
-  .exit-icon { font-size: 16px; min-width: 20px; }
-  .exit-note { color: var(--muted); font-size: 13px; margin-left: auto; }
 
   code { background: #f5f5f4; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
   a { color: #0369a1; text-decoration: none; }
@@ -318,7 +257,6 @@
   }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
-  /* Sprint tabs (top nav) */
   .sprint-tabs {
     display: flex;
     gap: 4px;
@@ -354,33 +292,7 @@
     font-weight: 500;
   }
   .sprint-tab.active .badge { background: var(--accent); color: white; }
-</style>
-</head>
-<body>
 
-<nav class="sprint-tabs">
-  <a href="../sprint-13/report.html" class="sprint-tab active">Sprint 13 <span class="badge">5</span></a>
-  <a href="../sprint-12/report.html" class="sprint-tab">Sprint 12 <span class="badge">20</span></a>
-</nav>
-
-<h1>DT Sprint 13 · QA 報告</h1>
-<div class="meta">2026-07-09 首驗 · 2026-07-13 更新 RFT · Alice 自測 · staging.justplaygame.com.tw · SOP v1.3</div>
-
-<div class="toolbar">
-  <button class="primary" onclick="showExport()">📋 匯出給 Claude</button>
-  <button onclick="downloadMd()">💾 下載 .md</button>
-  <button onclick="expandAll()">▽ 全部展開</button>
-  <button onclick="collapseAll()">△ 全部收合</button>
-  <button class="danger" onclick="clearAll()">🗑 清空手動紀錄</button>
-  <div class="status" id="save-status">本機自動儲存中</div>
-</div>
-
-<div class="verdict">
-  <h2>🟡 Sprint 13：3 張 PASS · 2 張新進 RFT 待測</h2>
-  <p>375 · 148 · 378 已通過驗收，Jira 已移至「完成」。376 · 392 兩張 bug 於 2026-07-13 同步時在 RFT，待驗測。Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。</p>
-</div>
-
-<style>
   .summary-headline { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
   .summary-icon { font-size: 44px; line-height: 1; }
   .summary-text { flex: 1; }
@@ -402,41 +314,59 @@
   .stat-card.fail .stat-num { color: var(--fail); }
   .stat-card.partial .stat-num { color: var(--partial); }
   .stat-card.skip .stat-num { color: var(--skip); }
-  .stat-card.pass { background: #ecfdf5; border-color: #a7f3d0; }
+  .stat-card.pass.hot { background: #ecfdf5; border-color: #a7f3d0; }
+
+  .load-error {
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;
+    padding: 16px 20px; color: #991b1b; font-size: 14px; margin: 24px 0;
+  }
 </style>
+</head>
+<body>
+
+<nav class="sprint-tabs">
+  <a href="../sprint-13/report.html" class="sprint-tab active">Sprint 13 <span class="badge" id="tab-badge">…</span></a>
+  <a href="../sprint-12/report.html" class="sprint-tab">Sprint 12 <span class="badge">20</span></a>
+</nav>
+
+<h1 id="page-title">DT Sprint 13 · QA 報告</h1>
+<div class="meta" id="page-meta">載入中…</div>
+
+<div class="toolbar">
+  <button class="primary" onclick="showExport()">📋 匯出給 Claude</button>
+  <button onclick="downloadMd()">💾 下載 .md</button>
+  <button onclick="expandAll()">▽ 全部展開</button>
+  <button onclick="collapseAll()">△ 全部收合</button>
+  <button class="danger" onclick="clearAll()">🗑 清空手動紀錄</button>
+  <div class="status" id="save-status">本機自動儲存中</div>
+</div>
+
+<div id="load-error-box" class="load-error" style="display:none;">
+  ⚠️ 讀不到 data.json。請透過網站網址開啟本頁（直接開本機檔案會被瀏覽器擋掉資料載入）。
+</div>
+
+<div class="verdict" id="verdict-box" style="display:none;">
+  <h2 id="verdict-title"></h2>
+  <p id="verdict-text"></p>
+</div>
 
 <h2>Sprint 進度總覽</h2>
 <div class="overall">
   <div class="summary-headline">
-    <div class="summary-icon">🟡</div>
+    <div class="summary-icon" id="summary-icon"></div>
     <div class="summary-text">
-      <div class="summary-title" style="color: var(--partial);">3 PASS · 2 待測</div>
-      <div class="summary-sub">Sprint 13 · 2026-07-13 更新（首驗 2026-07-09）</div>
+      <div class="summary-title" id="summary-title"></div>
+      <div class="summary-sub" id="summary-sub"></div>
     </div>
   </div>
   <div class="bar summary-bar">
-    <div class="bar-multi" style="width: 100%">
-      <div class="bar-seg bar-pass" style="width: 60%"></div>
-      <div class="bar-seg bar-skip" style="width: 40%"></div>
-    </div>
+    <div class="bar-multi" style="width: 100%" id="summary-bar"></div>
   </div>
   <div class="stat-cards">
-    <div class="stat-card pass">
-      <div class="stat-num">3</div>
-      <div class="stat-label">✅ PASS</div>
-    </div>
-    <div class="stat-card fail">
-      <div class="stat-num">0</div>
-      <div class="stat-label">🔴 FAIL</div>
-    </div>
-    <div class="stat-card partial">
-      <div class="stat-num">0</div>
-      <div class="stat-label">🟡 PARTIAL</div>
-    </div>
-    <div class="stat-card skip">
-      <div class="stat-num">2</div>
-      <div class="stat-label">⏭️ 待測</div>
-    </div>
+    <div class="stat-card pass" id="card-pass"><div class="stat-num" id="stat-pass">0</div><div class="stat-label">✅ PASS</div></div>
+    <div class="stat-card fail"><div class="stat-num" id="stat-fail">0</div><div class="stat-label">🔴 FAIL</div></div>
+    <div class="stat-card partial"><div class="stat-num" id="stat-partial">0</div><div class="stat-label">🟡 PARTIAL</div></div>
+    <div class="stat-card skip"><div class="stat-num" id="stat-skip">0</div><div class="stat-label">⏭️ 待測</div></div>
   </div>
 </div>
 
@@ -444,13 +374,13 @@
   <div class="label">✅ 我手動確認完成</div>
   <div class="bar"><div class="bar-fill bar-pass" id="manual-bar" style="width: 0%"></div></div>
   <div class="value">
-    <div>票 <span id="manual-count">0</span>/5</div>
+    <div>票 <span id="manual-count">0</span>/<span id="manual-total">0</span></div>
     <div style="font-size:11px;font-weight:400;">AC <span id="manual-ac-count">0</span>/<span id="manual-ac-total">0</span></div>
   </div>
 </div>
 
-<h2>🧪 RFT 待測 · 2 張</h2>
-<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">2026-07-13 自 Jira 同步的 Ready For Test 票。點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
+<h2 id="pending-header">🧪 RFT 待測</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;" id="pending-sub">自 Jira 同步的 Ready For Test 票。點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
 <table class="tickets">
   <thead>
     <tr>
@@ -466,8 +396,8 @@
   <tbody id="tickets-body-pending"></tbody>
 </table>
 
-<h2>✅ 已 PASS 歸檔 · 3 張</h2>
-<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">2026-07-09 驗收通過，Jira 已移至「完成」。保留驗收證據與你的手動紀錄</div>
+<h2 id="passed-header">✅ 已 PASS 歸檔</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">驗收通過、Jira 已移至「完成」的票。保留驗收證據與你的手動紀錄</div>
 <table class="tickets">
   <thead>
     <tr>
@@ -495,6 +425,10 @@
 </div>
 
 <script>
+// ============================================================
+// 模板區：這個檔案是固定模板，每次 sprint 同步「只改 data.json」。
+// STORAGE_KEY / EXPAND_KEY 與手動紀錄綁定，改名會讓 Alice 的紀錄消失。
+// ============================================================
 const STORAGE_KEY = 'qa-sprint13-manual-v1';
 const EXPAND_KEY = 'qa-sprint13-expanded-v1';
 
@@ -505,44 +439,65 @@ const STATUS_CHIP = {
   skip:    { chip: '⏭️ 未測', short: '⏭️ 未測' },
 };
 
-const passedTickets = [
-  {
-    id: '375', title: '前台搜尋：兩個關鍵字，找不到交集（Story）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
-    acs: [
-      { key: 'DoD', desc: '前台搜尋多關鍵字時應找到符合的商品（原 bug：找不到交集）', status: 'pass', evidence: '【我測到】搜「mario switch」→ 8+ 筆結果（Super Mario 派對 / 奧德賽 / Mario Kart 8 / Maker 2 / Tennis Ace / 特典等）。 【Alice 判定 ✅ PASS】多關鍵字搜尋正確。' },
-    ]
-  },
-  {
-    id: '148', title: '【後台、前台】商品總覽 訂單 目錄 排序內的文字需與 UI 相同', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
-    acs: [
-      { key: 'DoD', desc: '後台商品總覽 / 訂單 / 目錄的排序內文字須與 UI/Figma 一致', status: 'pass', evidence: '【我測到】後台顯示 dropdown「新增時間：新到舊」；前台顯示 3 button「最新上架 / 價格：低到高 / 價格：高到低」。 【Alice 判定 ✅ PASS】後台對到後台 UI、前台對到前台 UI，各自與自己那層 Figma 一致即通過（Claude 原誤解為「前後台要用同一種 UI」）。' },
-    ]
-  },
-  {
-    id: '378', title: '商品總覽應 2 行（現況 1 行截斷）（Bug）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
-    acs: [
-      { key: 'DoD', desc: '後台商品總覽的商品名稱過長時應斷為至多 2 行', status: 'pass', evidence: '【我測到】後台商品總覽首屏商品名（例：「【就是要玩】附贈DLC現貨 NS Switch 異度神劍2 黃金之國伊拉 中文版 異域神劍2 黃金國度伊拉」）顯示為 1 行截斷。 【Alice 判定 ✅ PASS】「至多兩行」= 上限，1 行或 2 行皆符合（Claude 原誤解為「必須斷 2 行才算通過」）。' },
-    ]
-  },
-];
+// ---------- 純函式（可獨立測試，不碰 DOM） ----------
 
-const pendingTickets = [
-  {
-    id: '376', title: '後台：[商品總覽] 搜尋兩個關鍵字，找不到交集；實際上有該產品（Bug）', status: 'skip', ac: '0/1', acPct: 0, acColor: 'skip',
-    acs: [
-      { key: 'DoD', desc: '後台商品總覽搜尋多個關鍵字時，應能找到符合所有關鍵字的商品（375 的後台版）', status: 'skip', evidence: '【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 Joe），待 Alice 驗測。' },
-    ]
-  },
-  {
-    id: '392', title: '購物車，若只能宅配的顯示方式，需與 UI 相同（Bug）', status: 'skip', ac: '0/1', acPct: 0, acColor: 'skip',
-    acs: [
-      { key: 'DoD', desc: '購物車內商品僅能宅配時，顯示方式需與 UI 相同。與 269 兩個停用條件同時成立時：先顯示「269-商品僅能宅配」，再顯示「訂單超過 20,000」', status: 'skip', evidence: '【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。' },
-    ]
-  },
-];
+// 一張票的整體結論：有 fail 就 fail、再看 partial、全 pass 才 pass、否則待測
+function deriveTicketStatus(t) {
+  const st = t.acs.map(a => a.status);
+  if (st.includes('fail')) return 'fail';
+  if (st.includes('partial')) return 'partial';
+  if (st.every(s => s === 'pass')) return 'pass';
+  if (st.includes('pass')) return 'partial';
+  return 'skip';
+}
 
-// 全部票（待測在前、已 PASS 在後）— 手動紀錄仍以票號為 key，localStorage 不受分區影響
-const tickets = [...pendingTickets, ...passedTickets];
+function deriveAcCoverage(t) {
+  const passCount = t.acs.filter(a => a.status === 'pass').length;
+  const total = t.acs.length;
+  const pct = total ? Math.round(passCount / total * 100) : 0;
+  const color = passCount === total && total > 0 ? 'pass' : (passCount > 0 ? 'partial' : 'skip');
+  return { label: `${passCount}/${total}`, pct, color };
+}
+
+function computeStats(tickets) {
+  const stats = { pass: 0, fail: 0, partial: 0, skip: 0, total: tickets.length };
+  tickets.forEach(t => { stats[deriveTicketStatus(t)]++; });
+  return stats;
+}
+
+// 總覽的語氣與文案，全部由數字推導
+function computeSummary(stats) {
+  if (stats.fail > 0) {
+    return { tone: 'fail', icon: '🔴', title: `${stats.fail} FAIL · 需修復`, verdictTitle: `🔴 有 ${stats.fail} 張 FAIL` };
+  }
+  if (stats.partial > 0) {
+    return { tone: 'partial', icon: '🟡', title: `${stats.partial} PARTIAL · 部分通過`, verdictTitle: `🟡 有 ${stats.partial} 張 PARTIAL` };
+  }
+  if (stats.skip > 0) {
+    return { tone: 'partial', icon: '🟡', title: `${stats.pass} PASS · ${stats.skip} 待測`, verdictTitle: `🟡 ${stats.pass} 張 PASS · ${stats.skip} 張待測` };
+  }
+  return { tone: 'pass', icon: '🟢', title: `全通過 · ${stats.pass} 張`, verdictTitle: `🟢 全 PASS（${stats.pass} 張）` };
+}
+
+function computeVerdictText(data) {
+  const parts = [];
+  const passedIds = data.passed.map(t => t.id).join(' · ');
+  const pendingIds = data.pending.map(t => t.id).join(' · ');
+  if (passedIds) parts.push(`${passedIds} 已通過驗收，Jira 已移至「完成」。`);
+  if (pendingIds) parts.push(`${pendingIds} 於 ${data.lastSyncDate} 同步時在 RFT，待驗測。`);
+  if (data.note) parts.push(data.note);
+  return parts.join(' ');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// ---------- 狀態 ----------
+let DATA = null;
+let allTickets = [];
+let state = {};
+let expanded = {};
 
 function loadState() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -559,30 +514,70 @@ function loadExpanded() {
 function saveExpanded() {
   localStorage.setItem(EXPAND_KEY, JSON.stringify(expanded));
 }
-
-let state = loadState();
-let expanded = loadExpanded();
-
 function ensureTicketState(id) {
   if (!state[id]) state[id] = { done: false, note: '', acs: {} };
   if (!state[id].acs) state[id].acs = {};
   return state[id];
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+// ---------- 渲染 ----------
+function renderSummary() {
+  const stats = computeStats(allTickets);
+  const summary = computeSummary(stats);
+
+  document.getElementById('tab-badge').textContent = stats.total;
+  document.getElementById('page-title').textContent = `${DATA.sprintLabel} · QA 報告`;
+  document.title = `${DATA.sprintLabel} QA 報告`;
+  document.getElementById('page-meta').textContent =
+    `${DATA.firstTestDate} 首驗 · ${DATA.lastSyncDate} 更新 RFT · Alice 自測 · staging.justplaygame.com.tw · SOP ${DATA.sopVersion}`;
+
+  const box = document.getElementById('verdict-box');
+  box.style.display = '';
+  box.className = 'verdict' + (summary.tone !== 'pass' ? ' tone-' + summary.tone : '');
+  document.getElementById('verdict-title').textContent = `${summary.verdictTitle}｜${DATA.sprintLabel}`;
+  document.getElementById('verdict-text').textContent = computeVerdictText(DATA);
+
+  document.getElementById('summary-icon').textContent = summary.icon;
+  const titleEl = document.getElementById('summary-title');
+  titleEl.textContent = summary.title;
+  titleEl.style.color = `var(--${summary.tone === 'pass' ? 'pass' : summary.tone})`;
+  document.getElementById('summary-sub').textContent =
+    `${DATA.sprintLabel} · ${DATA.lastSyncDate} 更新（首驗 ${DATA.firstTestDate}）`;
+
+  const segs = ['pass', 'fail', 'partial', 'skip']
+    .filter(k => stats[k] > 0)
+    .map(k => `<div class="bar-seg bar-${k}" style="width:${(stats[k] / stats.total * 100).toFixed(1)}%"></div>`)
+    .join('');
+  document.getElementById('summary-bar').innerHTML = segs || '<div class="bar-seg bar-skip" style="width:100%"></div>';
+
+  document.getElementById('stat-pass').textContent = stats.pass;
+  document.getElementById('stat-fail').textContent = stats.fail;
+  document.getElementById('stat-partial').textContent = stats.partial;
+  document.getElementById('stat-skip').textContent = stats.skip;
+  document.getElementById('card-pass').classList.toggle('hot', stats.pass > 0);
+
+  document.getElementById('pending-header').textContent = `🧪 RFT 待測 · ${DATA.pending.length} 張`;
+  document.getElementById('pending-sub').textContent =
+    `${DATA.lastSyncDate} 自 Jira 同步的 Ready For Test 票。點左邊 ▶ 展開看每條 AC 的驗收狀況與備註`;
+  document.getElementById('passed-header').textContent = `✅ 已 PASS 歸檔 · ${DATA.passed.length} 張`;
 }
 
 function renderTickets() {
-  renderGroup(pendingTickets, 'tickets-body-pending');
-  renderGroup(passedTickets, 'tickets-body-passed');
+  renderGroup(DATA.pending, 'tickets-body-pending');
+  renderGroup(DATA.passed, 'tickets-body-passed');
   updateManualProgress();
 }
 
 function renderGroup(list, tbodyId) {
   const tbody = document.getElementById(tbodyId);
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);">（目前沒有票）</td></tr>';
+    return;
+  }
   const rows = [];
   list.forEach(t => {
+    const status = deriveTicketStatus(t);
+    const cov = deriveAcCoverage(t);
     const s = ensureTicketState(t.id);
     const checked = s.done ? 'checked' : '';
     const note = escapeHtml(s.note || '');
@@ -595,12 +590,12 @@ function renderGroup(list, tbodyId) {
           <span class="expand-caret">▶</span>
         </td>
         <td class="col-ticket"><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-${t.id}" target="_blank">${t.id}</a></td>
-        <td>${t.title}</td>
-        <td><span class="chip chip-${t.status}">${STATUS_CHIP[t.status].chip}</span></td>
+        <td>${escapeHtml(t.title)}</td>
+        <td><span class="chip chip-${status}">${STATUS_CHIP[status].chip}</span></td>
         <td class="col-ac">
           <div class="ac-mini">
-            <div class="bar"><div class="bar-fill bar-${t.acColor}" style="width:${t.acPct}%"></div></div>
-            <div class="ac-mini-label">${t.ac}</div>
+            <div class="bar"><div class="bar-fill bar-${cov.color}" style="width:${cov.pct}%"></div></div>
+            <div class="ac-mini-label">${cov.label}</div>
           </div>
         </td>
         <td class="col-done">
@@ -631,7 +626,7 @@ function renderAcTable(t) {
     const rowClass = asub.done ? 'ac-done' : '';
     return `
       <tr class="${rowClass}">
-        <td class="col-ac-key">${ac.key}</td>
+        <td class="col-ac-key">${escapeHtml(ac.key)}</td>
         <td class="ac-desc">
           <div>${escapeHtml(ac.desc)}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px;">🔍 ${escapeHtml(ac.evidence)}</div>
@@ -664,6 +659,7 @@ function renderAcTable(t) {
   `;
 }
 
+// ---------- 互動 ----------
 function toggleExpand(id) {
   expanded[id] = !expanded[id];
   saveExpanded();
@@ -679,12 +675,12 @@ function toggleExpand(id) {
 }
 
 function expandAll() {
-  tickets.forEach(t => { expanded[t.id] = true; });
+  allTickets.forEach(t => { expanded[t.id] = true; });
   saveExpanded();
   renderTickets();
 }
 function collapseAll() {
-  tickets.forEach(t => { expanded[t.id] = false; });
+  allTickets.forEach(t => { expanded[t.id] = false; });
   saveExpanded();
   renderTickets();
 }
@@ -694,7 +690,7 @@ function toggleDone(id, done) {
   s.done = done;
   s.doneAt = done ? new Date().toISOString() : null;
   // Alice 規則：母勾 → 子 AC 全勾；取消母 → 子 AC 全取消
-  const t = tickets.find(x => x.id === id);
+  const t = allTickets.find(x => x.id === id);
   const now = new Date().toISOString();
   t.acs.forEach(ac => {
     if (!s.acs[ac.key]) s.acs[ac.key] = {};
@@ -730,12 +726,14 @@ function updateAcNote(ticketId, acKey, note) {
 }
 
 function updateManualProgress() {
-  const doneTickets = tickets.filter(t => state[t.id] && state[t.id].done).length;
+  const doneTickets = allTickets.filter(t => state[t.id] && state[t.id].done).length;
   document.getElementById('manual-count').textContent = doneTickets;
-  document.getElementById('manual-bar').style.width = Math.round((doneTickets / tickets.length) * 100) + '%';
+  document.getElementById('manual-total').textContent = allTickets.length;
+  document.getElementById('manual-bar').style.width =
+    (allTickets.length ? Math.round(doneTickets / allTickets.length * 100) : 0) + '%';
 
   let totalAcs = 0, doneAcs = 0;
-  tickets.forEach(t => {
+  allTickets.forEach(t => {
     totalAcs += t.acs.length;
     t.acs.forEach(ac => {
       if (state[t.id] && state[t.id].acs && state[t.id].acs[ac.key] && state[t.id].acs[ac.key].done) {
@@ -759,46 +757,56 @@ function showSaved() {
   }, 1500);
 }
 
+// ---------- 匯出 ----------
 function buildExport() {
   const now = new Date();
   const ts = now.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-  let md = `# Sprint 13 QA 手動測試紀錄\n\n`;
+  let md = `# ${DATA.sprintLabel} QA 手動測試紀錄\n\n`;
   md += `**匯出時間**：${ts}\n`;
   md += `**執行**：Alice · staging.justplaygame.com.tw\n\n`;
-  const doneTickets = tickets.filter(t => state[t.id] && state[t.id].done).length;
+  const doneTickets = allTickets.filter(t => state[t.id] && state[t.id].done).length;
   let totalAcs = 0, doneAcs = 0;
-  tickets.forEach(t => {
+  allTickets.forEach(t => {
     totalAcs += t.acs.length;
     t.acs.forEach(ac => {
       if (state[t.id] && state[t.id].acs && state[t.id].acs[ac.key] && state[t.id].acs[ac.key].done) doneAcs++;
     });
   });
-  md += `**整張手動完成**：${doneTickets}/${tickets.length}\n`;
+  md += `**整張手動完成**：${doneTickets}/${allTickets.length}\n`;
   md += `**AC 逐條手動完成**：${doneAcs}/${totalAcs}\n\n---\n\n`;
 
-  md += `## 單票 + AC 逐條紀錄\n\n`;
-  tickets.forEach(t => {
-    const s = state[t.id] || { acs: {} };
-    const doneMark = s.done ? '✅' : '⬜';
-    md += `### ${doneMark} JUSTPLAY-${t.id} · ${t.title}\n`;
-    md += `- **自動判定**：${STATUS_CHIP[t.status].chip} · AC ${t.ac}\n`;
-    md += `- **整張手動完成**：${s.done ? '是' : '否'}${s.doneAt ? ` (${new Date(s.doneAt).toLocaleString('zh-TW')})` : ''}\n`;
-    md += `- **整張備註**：${s.note ? '\n\n  ' + s.note.replace(/\n/g, '\n  ') : '（空）'}\n\n`;
-    md += `**AC 逐條**：\n\n`;
-    t.acs.forEach(ac => {
-      const asub = (s.acs && s.acs[ac.key]) || {};
-      const acDone = asub.done ? '✅' : '⬜';
-      md += `- ${acDone} **${ac.key}** ${ac.desc}\n`;
-      md += `  - 自動判定：${STATUS_CHIP[ac.status].short}\n`;
-      md += `  - 證據：${ac.evidence}\n`;
-      md += `  - 手動 OK：${asub.done ? '是' : '否'}\n`;
-      if (asub.note) md += `  - 備註：${asub.note.replace(/\n/g, ' / ')}\n`;
+  const sections = [
+    { label: '🧪 RFT 待測', list: DATA.pending },
+    { label: '✅ 已 PASS 歸檔', list: DATA.passed },
+  ];
+  sections.forEach(sec => {
+    if (!sec.list.length) return;
+    md += `## ${sec.label}\n\n`;
+    sec.list.forEach(t => {
+      const status = deriveTicketStatus(t);
+      const cov = deriveAcCoverage(t);
+      const s = state[t.id] || { acs: {} };
+      const doneMark = s.done ? '✅' : '⬜';
+      md += `### ${doneMark} JUSTPLAY-${t.id} · ${t.title}\n`;
+      md += `- **自動判定**：${STATUS_CHIP[status].chip} · AC ${cov.label}\n`;
+      md += `- **整張手動完成**：${s.done ? '是' : '否'}${s.doneAt ? ` (${new Date(s.doneAt).toLocaleString('zh-TW')})` : ''}\n`;
+      md += `- **整張備註**：${s.note ? '\n\n  ' + s.note.replace(/\n/g, '\n  ') : '（空）'}\n\n`;
+      md += `**AC 逐條**：\n\n`;
+      t.acs.forEach(ac => {
+        const asub = (s.acs && s.acs[ac.key]) || {};
+        const acDone = asub.done ? '✅' : '⬜';
+        md += `- ${acDone} **${ac.key}** ${ac.desc}\n`;
+        md += `  - 自動判定：${STATUS_CHIP[ac.status].short}\n`;
+        md += `  - 證據：${ac.evidence}\n`;
+        md += `  - 手動 OK：${asub.done ? '是' : '否'}\n`;
+        if (asub.note) md += `  - 備註：${asub.note.replace(/\n/g, ' / ')}\n`;
+      });
+      md += `\n`;
     });
-    md += `\n`;
   });
 
   md += `---\n\n## 給 Claude 的提示\n\n`;
-  md += `這是 DT Sprint 13 QA 手動測試紀錄。每張票的 evidence 欄含「【我測到】客觀觀察」+「【Alice 判定】最終結論」兩層。若 Alice 貼給你，優先看 Alice 判定；「我測到」是備援證據。\n`;
+  md += `這是 ${DATA.sprintLabel} QA 手動測試紀錄。每張票的 evidence 欄含「【我測到】客觀觀察」+「【Alice 判定】最終結論」兩層。若 Alice 貼給你，優先看 Alice 判定；「我測到」是備援證據。\n`;
   return md;
 }
 
@@ -824,8 +832,9 @@ function downloadMd() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   const stamp = new Date().toISOString().slice(0,16).replace(/[-:T]/g, '');
+  const slug = DATA.sprintLabel.toLowerCase().replace(/[^a-z0-9]+/g, '');
   a.href = url;
-  a.download = `qa-sprint13-manual-${stamp}.md`;
+  a.download = `qa-${slug}-manual-${stamp}.md`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -837,7 +846,27 @@ function clearAll() {
   showSaved();
 }
 
-renderTickets();
+// ---------- 啟動 ----------
+async function init() {
+  state = loadState();
+  expanded = loadExpanded();
+  try {
+    const res = await fetch('data.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    DATA = await res.json();
+  } catch (e) {
+    document.getElementById('load-error-box').style.display = '';
+    document.getElementById('page-meta').textContent = '資料載入失敗';
+    return;
+  }
+  allTickets = [...DATA.pending, ...DATA.passed];
+  renderSummary();
+  renderTickets();
+}
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  init();
+}
 </script>
 
 </body>
