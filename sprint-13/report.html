@@ -58,14 +58,14 @@
   .toolbar .status.saved { color: var(--pass); }
 
   .verdict {
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    border-left: 6px solid var(--pass);
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 6px solid var(--partial);
     padding: 16px 20px;
     border-radius: 8px;
     margin-bottom: 24px;
   }
-  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #065f46; font-size: 18px; }
+  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #92400e; font-size: 18px; }
   .verdict p { margin: 4px 0 0; font-size: 14px; }
 
   .overall {
@@ -359,12 +359,12 @@
 <body>
 
 <nav class="sprint-tabs">
-  <a href="../sprint-13/report.html" class="sprint-tab active">Sprint 13 <span class="badge">3</span></a>
+  <a href="../sprint-13/report.html" class="sprint-tab active">Sprint 13 <span class="badge">5</span></a>
   <a href="../sprint-12/report.html" class="sprint-tab">Sprint 12 <span class="badge">20</span></a>
 </nav>
 
 <h1>DT Sprint 13 · QA 報告</h1>
-<div class="meta">2026-07-09 · Alice 自測 · staging.justplaygame.com.tw · SOP v1.3</div>
+<div class="meta">2026-07-09 首驗 · 2026-07-13 更新 RFT · Alice 自測 · staging.justplaygame.com.tw · SOP v1.3</div>
 
 <div class="toolbar">
   <button class="primary" onclick="showExport()">📋 匯出給 Claude</button>
@@ -376,8 +376,8 @@
 </div>
 
 <div class="verdict">
-  <h2>🟢 Sprint 13：3 張全 PASS</h2>
-  <p>375 · 148 · 378 三張皆通過驗收（Alice 判定）。Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。</p>
+  <h2>🟡 Sprint 13：3 張 PASS · 2 張新進 RFT 待測</h2>
+  <p>375 · 148 · 378 已通過驗收，Jira 已移至「完成」。376 · 392 兩張 bug 於 2026-07-13 同步時在 RFT，待驗測。Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。</p>
 </div>
 
 <style>
@@ -408,15 +408,16 @@
 <h2>Sprint 進度總覽</h2>
 <div class="overall">
   <div class="summary-headline">
-    <div class="summary-icon">🟢</div>
+    <div class="summary-icon">🟡</div>
     <div class="summary-text">
-      <div class="summary-title" style="color: var(--pass);">全通過 · 3 張</div>
-      <div class="summary-sub">Sprint 13 · 2026-07-09 執行</div>
+      <div class="summary-title" style="color: var(--partial);">3 PASS · 2 待測</div>
+      <div class="summary-sub">Sprint 13 · 2026-07-13 更新（首驗 2026-07-09）</div>
     </div>
   </div>
   <div class="bar summary-bar">
     <div class="bar-multi" style="width: 100%">
-      <div class="bar-seg bar-pass" style="width: 100%"></div>
+      <div class="bar-seg bar-pass" style="width: 60%"></div>
+      <div class="bar-seg bar-skip" style="width: 40%"></div>
     </div>
   </div>
   <div class="stat-cards">
@@ -433,7 +434,7 @@
       <div class="stat-label">🟡 PARTIAL</div>
     </div>
     <div class="stat-card skip">
-      <div class="stat-num">0</div>
+      <div class="stat-num">2</div>
       <div class="stat-label">⏭️ 待測</div>
     </div>
   </div>
@@ -443,13 +444,13 @@
   <div class="label">✅ 我手動確認完成</div>
   <div class="bar"><div class="bar-fill bar-pass" id="manual-bar" style="width: 0%"></div></div>
   <div class="value">
-    <div>票 <span id="manual-count">0</span>/3</div>
+    <div>票 <span id="manual-count">0</span>/5</div>
     <div style="font-size:11px;font-weight:400;">AC <span id="manual-ac-count">0</span>/<span id="manual-ac-total">0</span></div>
   </div>
 </div>
 
-<h2>3 張 RFT 單票結果</h2>
-<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
+<h2>🧪 RFT 待測 · 2 張</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">2026-07-13 自 Jira 同步的 Ready For Test 票。點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
 <table class="tickets">
   <thead>
     <tr>
@@ -462,7 +463,24 @@
       <th class="col-note">整張備註</th>
     </tr>
   </thead>
-  <tbody id="tickets-body"></tbody>
+  <tbody id="tickets-body-pending"></tbody>
+</table>
+
+<h2>✅ 已 PASS 歸檔 · 3 張</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">2026-07-09 驗收通過，Jira 已移至「完成」。保留驗收證據與你的手動紀錄</div>
+<table class="tickets">
+  <thead>
+    <tr>
+      <th class="col-expand"></th>
+      <th class="col-ticket">票號</th>
+      <th>標題</th>
+      <th class="col-status">結論</th>
+      <th class="col-ac">AC 覆蓋率</th>
+      <th class="col-done">整張<br>完成</th>
+      <th class="col-note">整張備註</th>
+    </tr>
+  </thead>
+  <tbody id="tickets-body-passed"></tbody>
 </table>
 
 <div class="modal-mask" id="export-modal" onclick="if(event.target===this)hideExport()">
@@ -487,7 +505,7 @@ const STATUS_CHIP = {
   skip:    { chip: '⏭️ 未測', short: '⏭️ 未測' },
 };
 
-const tickets = [
+const passedTickets = [
   {
     id: '375', title: '前台搜尋：兩個關鍵字，找不到交集（Story）', status: 'pass', ac: '1/1', acPct: 100, acColor: 'pass',
     acs: [
@@ -507,6 +525,24 @@ const tickets = [
     ]
   },
 ];
+
+const pendingTickets = [
+  {
+    id: '376', title: '後台：[商品總覽] 搜尋兩個關鍵字，找不到交集；實際上有該產品（Bug）', status: 'skip', ac: '0/1', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'DoD', desc: '後台商品總覽搜尋多個關鍵字時，應能找到符合所有關鍵字的商品（375 的後台版）', status: 'skip', evidence: '【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 Joe），待 Alice 驗測。' },
+    ]
+  },
+  {
+    id: '392', title: '購物車，若只能宅配的顯示方式，需與 UI 相同（Bug）', status: 'skip', ac: '0/1', acPct: 0, acColor: 'skip',
+    acs: [
+      { key: 'DoD', desc: '購物車內商品僅能宅配時，顯示方式需與 UI 相同。與 269 兩個停用條件同時成立時：先顯示「269-商品僅能宅配」，再顯示「訂單超過 20,000」', status: 'skip', evidence: '【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。' },
+    ]
+  },
+];
+
+// 全部票（待測在前、已 PASS 在後）— 手動紀錄仍以票號為 key，localStorage 不受分區影響
+const tickets = [...pendingTickets, ...passedTickets];
 
 function loadState() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -538,9 +574,15 @@ function escapeHtml(s) {
 }
 
 function renderTickets() {
-  const tbody = document.getElementById('tickets-body');
+  renderGroup(pendingTickets, 'tickets-body-pending');
+  renderGroup(passedTickets, 'tickets-body-passed');
+  updateManualProgress();
+}
+
+function renderGroup(list, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
   const rows = [];
-  tickets.forEach(t => {
+  list.forEach(t => {
     const s = ensureTicketState(t.id);
     const checked = s.done ? 'checked' : '';
     const note = escapeHtml(s.note || '');
@@ -578,7 +620,6 @@ function renderTickets() {
     `);
   });
   tbody.innerHTML = rows.join('');
-  updateManualProgress();
 }
 
 function renderAcTable(t) {
@@ -784,7 +825,7 @@ function downloadMd() {
   const a = document.createElement('a');
   const stamp = new Date().toISOString().slice(0,16).replace(/[-:T]/g, '');
   a.href = url;
-  a.download = `qa-sprint12-manual-${stamp}.md`;
+  a.download = `qa-sprint13-manual-${stamp}.md`;
   a.click();
   URL.revokeObjectURL(url);
 }
