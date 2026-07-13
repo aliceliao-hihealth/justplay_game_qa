@@ -576,6 +576,7 @@ function renderGroup(list, tbodyId) {
   }
   const rows = [];
   list.forEach(t => {
+    const jiraKey = t.key || ('JUSTPLAY-' + t.id); // 跨專案票（如 DT-18）在 data.json 填 key
     const status = deriveTicketStatus(t);
     const cov = deriveAcCoverage(t);
     const s = ensureTicketState(t.id);
@@ -589,7 +590,7 @@ function renderGroup(list, tbodyId) {
         <td class="col-expand" onclick="toggleExpand('${t.id}')">
           <span class="expand-caret">▶</span>
         </td>
-        <td class="col-ticket"><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-${t.id}" target="_blank">${t.id}</a></td>
+        <td class="col-ticket"><a href="https://hihealthtw.atlassian.net/browse/${jiraKey}" target="_blank">${t.id}</a></td>
         <td>${escapeHtml(t.title)}</td>
         <td><span class="chip chip-${status}">${STATUS_CHIP[status].chip}</span></td>
         <td class="col-ac">
@@ -787,7 +788,7 @@ function buildExport() {
       const cov = deriveAcCoverage(t);
       const s = state[t.id] || { acs: {} };
       const doneMark = s.done ? '✅' : '⬜';
-      md += `### ${doneMark} JUSTPLAY-${t.id} · ${t.title}\n`;
+      md += `### ${doneMark} ${t.key || ('JUSTPLAY-' + t.id)} · ${t.title}\n`;
       md += `- **自動判定**：${STATUS_CHIP[status].chip} · AC ${cov.label}\n`;
       md += `- **整張手動完成**：${s.done ? '是' : '否'}${s.doneAt ? ` (${new Date(s.doneAt).toLocaleString('zh-TW')})` : ''}\n`;
       md += `- **整張備註**：${s.note ? '\n\n  ' + s.note.replace(/\n/g, '\n  ') : '（空）'}\n\n`;

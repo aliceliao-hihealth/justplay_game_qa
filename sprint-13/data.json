@@ -6,6 +6,19 @@
   "note": "Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。",
   "pending": [
     {
+      "id": "DT-18",
+      "key": "DT-18",
+      "title": "前台物流 - 沒有交集的物流項目是呈現disabled（Bug）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "沒有交集的物流項目是呈現 disabled；目前是直接不顯示（Jira 原文）",
+          "status": "skip",
+          "evidence": "【尚未測試】2026-07-13 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。"
+        }
+      ]
+    },
+    {
       "id": "376",
       "title": "後台：[商品總覽] 搜尋兩個關鍵字，找不到交集；實際上有該產品（Bug）",
       "acs": [
