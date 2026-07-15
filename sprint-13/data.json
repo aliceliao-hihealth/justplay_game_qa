@@ -3,7 +3,7 @@
   "sopVersion": "v1.3",
   "firstTestDate": "2026-07-09",
   "lastSyncDate": "2026-07-15",
-  "note": "Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。7/15 重測 432/392 時另發現 2 隻新 bug 待開票：(1) 無商品圖片的商品無法加入購物車且錯誤訊息為英文；(2) 僅「訂單超過 20,000」條件成立時紅字誤用「僅限宅配」訊息。",
+  "note": "Sprint 12 遺留 P0 BUG-06 仍為前置 blocker，需另外追蹤。7/15 重測 432/392 時另發現 2 隻新 bug 待開票：(1) 無商品圖片的商品無法加入購物車且錯誤訊息為英文；(2) 僅「訂單超過 20,000」條件成立時紅字誤用「僅限宅配」訊息。7/15 晚間另觀察：同一瀏覽器 profile 前台會員與後台 admin session 於約 1 小時內同時失效，且後台登入頁疑似不接受瀏覽器 autofill 帶入的帳密（送出無反應、無錯誤訊息）——疑似 435「頻繁被登出」回歸＋登入表單問題，擋住 377/390/242(後台)/305/395 的測試，待工程確認。",
   "pending": [
     {
       "id": "DT-18",
@@ -37,8 +37,8 @@
         {
           "key": "AC1",
           "desc": "購物車可選「宅配」（前台）：Given 買家在購物車結帳頁, When 選擇寄送方式, Then 選項清單出現「宅配」且可選取（Jira 原文）",
-          "status": "skip",
-          "evidence": "【尚未測試】2026-07-15 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。"
+          "status": "pass",
+          "evidence": "【我測到】2026-07-15 購物車取貨方式清單出現「宅配」且可選（含僅宅配商品時自動選取、一般商品組合時可手動選）。【Alice 判定待補】"
         },
         {
           "key": "AC2",
@@ -122,7 +122,7 @@
           "key": "DoD",
           "desc": "欄位內容遮擋的 UI 應對策略：包含訂單編號也至多 2 行；換行處理（DoD 以票標題為準；description 僅 Figma 連結＋「換行處理」。注意「至多 2 行」= 上限，1 行也 PASS）",
           "status": "skip",
-          "evidence": "【尚未測試】2026-07-15 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。票附 Figma（阿翔Style node 5-9445），測前先讀設計稿。"
+          "evidence": "【無法測試】2026-07-15 後台 session 失效且登入表單不接受 autofill 帳密（見 note），無法進後台驗證欄位換行。票附 Figma（阿翔Style node 5-9445），補測前先讀設計稿。"
         }
       ]
     },
@@ -133,8 +133,8 @@
         {
           "key": "DoD",
           "desc": "改入新 logo；7/15 根據 UI 更改（DoD 以票標題為準；description 原文僅「7/15 根據UI 更改」）",
-          "status": "skip",
-          "evidence": "【尚未測試】2026-07-15 自 Jira 同步，票在 RFT（負責人 Roman），待 Alice 驗測。需對照最新 UI 的 logo 檔。"
+          "status": "partial",
+          "evidence": "【我測到】2026-07-15 晚間前台 header 已改版上線（新版頭部佈局＋首頁 banner），logo 為黃底「就是要玩 JUSTPLAY」方塊、尺寸較先前小。票上無新 logo 參照檔，無法比對此版是否即為「新 logo」→ 依原則 10 不自判，待 Alice 對照 UI 目視判定。"
         }
       ]
     },
@@ -145,8 +145,8 @@
         {
           "key": "DoD",
           "desc": "前台頂端目錄要有「所有商品」；目前沒有（DoD 以票標題為準；description 僅 2 張截圖）",
-          "status": "skip",
-          "evidence": "【尚未測試】2026-07-15 自 Jira 同步，票在 RFT（負責人 Roman），待 Alice 驗測。備註：7/15 重測 432 時目視前台頂端目錄已有「所有商品」入口，可快速確認。"
+          "status": "pass",
+          "evidence": "【我測到】2026-07-15 前台頂端目錄第一項即為「所有商品」，點擊進入全部商品列表正常（共 1892 件商品）。新版 header 上線後再次目視確認仍在。【Alice 判定待補】"
         }
       ]
     },
@@ -158,7 +158,7 @@
           "key": "DoD",
           "desc": "後台點擊「已出貨」，無法出貨（DoD 以票標題為準；description 僅截圖＋mention Mars/Reverie）",
           "status": "skip",
-          "evidence": "【尚未測試】2026-07-15 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。與 407（儲存後才能出貨）流程相鄰，建議一起回歸。"
+          "evidence": "【無法測試】2026-07-15 後台 session 失效且登入表單不接受 autofill 帳密（見 note），無法進後台操作出貨。與 407（儲存後才能出貨）流程相鄰，補測時一起回歸。"
         }
       ]
     },
@@ -236,7 +236,7 @@
           "key": "AC1",
           "desc": "已登入會員進購物車→email 自動預帶且顯示已驗證：Given 會員 A 帳號 email 為 alice@example.com，且 email_verified = true, When 會員 A 登入後進入購物車/結帳頁, Then「聯絡 Email」欄位預帶 alice@example.com，且欄位旁顯示「已驗證」狀態標記（Jira 原文）",
           "status": "skip",
-          "evidence": "【尚未測試】2026-07-15 自 Jira 同步，票在 RFT（負責人 eddy），待 Alice 驗測。"
+          "evidence": "【無法測試】2026-07-15 前台會員 session 已失效、手上無會員測試帳密可登入（autofill 為後台帳號，前台回「帳號或密碼輸入錯誤」——錯誤訊息為中文 ✓）。需 Alice 登入會員後補測。"
         },
         {
           "key": "AC2",
