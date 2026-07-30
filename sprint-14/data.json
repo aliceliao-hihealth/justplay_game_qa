@@ -1,0 +1,161 @@
+{
+  "sprintLabel": "DT Sprint 14",
+  "sopVersion": "v1.5",
+  "firstTestDate": "2026-07-29",
+  "lastSyncDate": "2026-07-30",
+  "note": "7/30 二輪同步：逐票比對 Jira，424/425/472/495 的 AC／DoD 內容與 7/29 快照完全一致（updated 時間戳未變）＝無 AC 更改、不需新增測項；372 已於 7/29 15:15 轉「完成」（QA 3/3 pass 後由工程轉），移至歸檔區。新進 RFT 3 張：244（後台商品庫存同步，票面僅 1 張圖、資訊不足）、511（[正式機] 購物車沒顯示物流方式）、524（正式機無法結帳）——511/524 為正式機驗收，需登入正式機會員帳號，測試方式待 Alice 拍板（見各票 evidence）；正式機唯讀檢查：/api/health 200、首頁正常、ISR＋CloudFront 已部署。會員側補測（424 DoD2＋smoke 購物車步驟）仍卡 Chrome 擴充網域授權：staging.justplaygame.com.tw 於 7/30 再測仍為 not allowed，github.com 亦同（報告發佈續卡），gh CLI 未登入。｜7/29 首輪：Sprint 14（7/20–7/28）RFT 5 張全為 [RD] 正式伺服器環境優化 v1 基礎架構票。測前檢查（SOP §3.0）：全數 Story 型、皆有 DoD；372 與 472 於 7/29 下午（15:02／15:08）剛更新過，AC 以當日快照為準。重點結果：424 ISR 首頁+分類頁快取全 HIT；372 後端分頁／搜尋／狀態統計三項全數實作且實測通過（票內原規劃分頁先做、統計上線後補，實際三項都完成）；425 CDN 快取運作正常，但「後端傳給前端的 S3 路徑改用 CDN 路徑」未達成（判定方向待 Alice/Mars 確認，見該票 evidence）；495 版本號無法從外部驗證，需 Eddy 提供部署佐證；472 五條 AC 有四條需工程配合（故障注入＋Slack 頻道確認），僅 AC5（webhook 不落 bundle）已驗 PASS。觀察項（bug 候選待 Alice 判定）：(1) /api/version 回 500 而非 404，P3；(2) 後台訂單狀態 tab 加總 53 ≠ 全部 54，疑 1 筆「流程異常」訂單無歸屬 tab，P3 待確認；(3) 後台訂單商品縮圖直連 S3 與蝦皮圖床 s-cf-tw.shopeesz.com、未走 CDN（供 425 判定參考）。｜7/29 smoke test 收尾：FAIL（測試資料 blocker）— QA-A~F 基準商品全數消失：前台 storefront API search=QA-A／QA-宅配 皆 0 筆（搜尋參數本身正常：瑪利歐 34 筆），sprint-13 重建時所在分類「其他>居家生活」已不存在，全站分類樹已重建（影音／愛好與收藏品／時尚配件／相機&空拍機…）＝ sprint-13 問題(9) 復發，需依 Confluence 157319178 重建，並再次建議工程開「QA 測試專區」分類；首頁可開 ✓（200 + ISR HIT）；加入購物車／Step1／後台改庫存三步無法執行：(a) Chrome 擴充本輪僅授權 staging-bo 網域、前台 staging 網域被擋（會員登入與購物車操作做不了），(b) 無 QA 商品可安全改庫存（不動真實商品）。本輪對 staging 無任何資料異動（純唯讀操作）。另記：後台 admin 帳密由密碼管理員 autofill 直接登入成功，sprint-13 觀察的「表單不接受 autofill」卡點未重現。",
+  "pending": [
+    {
+      "id": "424",
+      "title": "Next.js ISR 增量靜態生成",
+      "acs": [
+        {
+          "key": "DoD1",
+          "desc": "首頁跟分類頁快取，觀察 x-nextjs-cache 需要為 HIT（Jira DoD 原文）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 curl 實測：首頁連打 3 次 x-nextjs-cache=HIT（最初一打曾見 STALE，屬 ISR revalidate 正常行為；cache-control: s-maxage=60, stale-while-revalidate）；/categories 列表頁 2 次 HIT；分類子頁（電玩遊戲片/PS遊戲）3 次 HIT；皆帶 x-nextjs-prerender: 1。DoD 指定之 header 全數 HIT。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD2",
+          "desc": "首頁跟分類頁的會員和購物車每個會員只會看到自己的內容（Jira DoD 原文）",
+          "status": "partial",
+          "evidence": "【我測到·匿名側】ISR 快取回應的 HTML 為訪客狀態：header 顯示「登入」、無購物車數量、全文無任何會員 email／個資 → 快取頁不含特定會員內容、會員資料為 client-side 掛載，不會把 A 會員的內容端給 B 會員，架構正確。【未完成·會員側】登入後首頁/分類頁應顯示自己的會員狀態與購物車數——本輪 Chrome 擴充僅授權 staging-bo 網域、前台網域被擋無法登入操作。請 Alice 登入目視補驗（約 1 分鐘），或開放前台網域後由我補測。"
+        }
+      ]
+    },
+    {
+      "id": "425",
+      "title": "前端資源進 CDN",
+      "acs": [
+        {
+          "key": "DoD1",
+          "desc": "X-Cache 顯示 Hit from cloudfront（Jira DoD 原文）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 curl：/_next/static chunk 第 1 次 Miss from cloudfront、第 2 次 Hit from cloudfront ✓（cache-control: public, max-age=31536000, immutable）；/_next/image（商品圖轉檔）第 2 次 Hit ✓；/product/images/*.jpg 由 CloudFront 路由至 S3 origin（server: AmazonS3）第 2 次 Hit ✓。HTML 文件本身固定 Miss（頁面快取由 ISR 負責、CDN 不快取 HTML，屬合理設定，DoD 未要求）。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD2",
+          "desc": "圖片、影片路徑是用 CDN Endpoint；工作內容含「後端: 傳給前端的 s3 路徑要改用 CDN 路徑」「前端: remotePatterns 要支援 CDN Endpoint」（Jira 原文）",
+          "status": "partial",
+          "evidence": "【我測到】前台商品圖 img src = /_next/image?url=https%3A%2F%2Fjust-e-commerce-staging.s3.us-west-2.amazonaws.com%2Fproduct%2Fimages%2F…：URL 參數內仍是 S3 直連路徑 → 工作內容「後端傳給前端的 s3 路徑要改用 CDN 路徑」未達成；已建好的 CloudFront /product/images/* 路由（實測可用且會 Hit）未被前台使用。實際流量仍有經 CDN（外層 /_next/image 第 2 次 Hit），但 cache miss 時 image optimizer 需回源 S3、且 S3 bucket 名稱暴露於前端 HTML。另觀察：後台訂單列表商品縮圖直連 S3 與蝦皮圖床（s-cf-tw.shopeesz.com），完全未經 CDN。影片：現有前台頁面找不到影片素材，未驗。依 SOP 原則 10，「路徑是用 CDN Endpoint」的判定方向（外層有經 CloudFront 即算 vs 後端回傳路徑須為 CDN 網域）待 Alice 與 Mars 確認，暫標 PARTIAL 不自判。"
+        }
+      ]
+    },
+    {
+      "id": "495",
+      "title": "前端 Next.js 跟 react 安全性升級",
+      "acs": [
+        {
+          "key": "DoD1",
+          "desc": "Next.js 升級到 16.2.11（修 CVE-2026-64641 DoS／64642 Proxy 繞過／64649 SSRF）、React 升級到 19.2.7（修 CVE-2026-23869 DoS）並重新部署（Jira 原文）",
+          "status": "skip",
+          "evidence": "【無法測試·需工程佐證】框架 patch 版本無法從外部驗證：response header 僅 x-powered-by: Next.js（無版本號）；無可用版本端點（/api/version 回 500、/health 404）。請 Eddy 提供 staging 部署佐證（package.json／lockfile 版本或 deploy log 截圖）後由 Alice 補判。"
+        },
+        {
+          "key": "DoD2",
+          "desc": "確認功能可以正常執行，包含 ISR 機制（Jira 原文）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 升級後 staging 抽驗未見功能退化：前台首頁／分類頁／分類子頁載入正常，ISR 機制正常（x-nextjs-cache HIT、x-nextjs-prerender:1、s-maxage=60 revalidate 行為正確，詳見 424）；後台登入、訂單列表、翻頁、搜尋均正常（詳見 372）；/api/health 200。【Alice 判定待補】"
+        }
+      ]
+    },
+    {
+      "id": "472",
+      "title": "[前端] 重要 API 失敗時即時推播 Slack 告警",
+      "acs": [
+        {
+          "key": "AC1",
+          "desc": "指定重要端點回 5xx／網路錯誤時，Slack 頻道收到訊息，且含 app、環境、端點、狀態碼、時間（Jira 原文）",
+          "status": "skip",
+          "evidence": "【無法測試·需工程配合】驗證需 (a) 在 staging 對重要 API（submitOrder／fetchEcpayPaymentForm／登入）注入 5xx 或斷網故障 (b) 讀取對應 Slack 頻道。PM 側無法自行安全製造後端 5xx，且告警頻道／webhook 票上仍列待確認。建議與 Roman 約 15 分鐘聯測：工程臨時讓某端點回 500 → 確認 Slack 訊息五要素（app／環境／端點／狀態碼／時間）。"
+        },
+        {
+          "key": "AC2",
+          "desc": "使用者輸入類 4xx（400/422）不觸發推播（Jira 原文）",
+          "status": "skip",
+          "evidence": "【無法測試·需工程配合】需搭配 Slack 頻道確認「沒有訊息」。與 AC1 聯測時一併驗：送一筆缺欄位表單觸發 422 → 頻道應無新訊息。"
+        },
+        {
+          "key": "AC3",
+          "desc": "同一錯誤在節流視窗內（如 5 分鐘）只推一次，不洗版（Jira 原文）",
+          "status": "skip",
+          "evidence": "【無法測試·需工程配合】與 AC1 聯測時連續觸發同一錯誤 3 次 → 頻道應只出現 1 則。"
+        },
+        {
+          "key": "AC4",
+          "desc": "dev 環境不推播（Jira 原文）",
+          "status": "skip",
+          "evidence": "【無法測試】PM 側無 dev 環境，屬工程自測範圍。請 Roman 附自測證據（dev 觸發錯誤 → 頻道無訊息）供 Alice 併卷。"
+        },
+        {
+          "key": "AC5",
+          "desc": "webhook URL 不出現在前端 bundle / Network（走 server proxy）（Jira 原文）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 下載 staging 首頁引用的全部 15 個 /_next/static JS chunk 全文掃描：無 hooks.slack.com、無任何 Slack webhook URL／變數字串 ✓ webhook 僅存 server 端的設計落實。一般瀏覽的 Network 亦未見對 Slack 網域的請求。註：掃描範圍為首頁 bundle，其他路由的 chunk 未逐一掃描。【Alice 判定待補】"
+        }
+      ]
+    },
+    {
+      "id": "244",
+      "title": "對接阿翔【後台商品】商品庫存數同步方式",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "商品庫存數同步方式（DoD 以票標題為準；description 僅 1 張截圖，無 AC 文字，2026-07-28 進 RFT，負責人 Joe）",
+          "status": "skip",
+          "evidence": "【無法測試·票面資訊不足】2026-07-30 自 Jira 同步：description 僅 1 張截圖，同步機制（對接對象、觸發時機、預期行為）與驗法無從判斷，不符 DoR-Test「需特殊測試資料應留 setup 步驟」。觀察：staging 後台有 Joe 於 7/29 建立的「測試商品上架同步到測試 0729」（Active），疑為其自測資料。建議請 Joe 補 AC 文字與驗證步驟，或依 SOP §2 退回 In Progress。"
+        }
+      ]
+    },
+    {
+      "id": "511",
+      "title": "[正式機] 購物車沒有顯示「物流方式」（Bug）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "正式機購物車應顯示「物流方式」選項（DoD 以票標題為準；description 僅截圖；2026-07-30 09:32 更新，負責人 Joe）",
+          "status": "skip",
+          "evidence": "【待定測試方式·正式機驗收】2026-07-30 唯讀偵察：正式機 /cart 未登入導向 /login，驗收需登入正式機會員帳號且購物車有商品。QA SOP 的測試基準是 staging，正式機測試（測試帳號、可加購商品、操作善後）無既定規範 → 測試方式待 Alice 拍板：(a) Alice 自驗，或 (b) 授權以 Alice 會員帳號在正式機操作購物車（加入→驗證顯示→移除，不進金流）。與 524 同場驗收可一次完成。"
+        }
+      ]
+    },
+    {
+      "id": "524",
+      "title": "正式機無法結帳（Bug）",
+      "acs": [
+        {
+          "key": "DoD",
+          "desc": "點擊[去結帳]應正常進入結帳流程、不報錯（票標題＋description「點擊[去結帳]->報錯」為準；負責人 Reverie）",
+          "status": "skip",
+          "evidence": "【待定測試方式·正式機驗收】需正式機會員登入＋購物車有商品，點[去結帳]確認不再報錯（到達結帳 Step1 即可判定，不需完成付款）。結帳斷點＝掉單，屬 P0 級正式機 bug 的修復驗證，建議優先排驗、與 511 同場執行。2026-07-30 唯讀檢查：正式機 /api/health 200、首頁正常、ISR＋CloudFront 已部署至正式機。"
+        }
+      ]
+    }
+  ],
+  "passed": [
+    {
+      "id": "372",
+      "title": "[後端] 後台訂單列表未分頁風險",
+      "acs": [
+        {
+          "key": "AC1",
+          "desc": "【高·分頁】補齊後端分頁：每次 API 只回傳該頁的訂單，不再全表撈取（Jira 原文）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 後台（staging-bo）實測：訂單列表翻頁觸發 GET /next/api/admin/orders?page=2&perPage=10&sortCreatedTime=desc → 200；API 回應每頁僅 10 筆、total=54；DOM 僅渲染當頁 10 筆訂單編號，第 1／2 頁內容不同且各 10 筆 → 真後端分頁，非「全撈後前端視覺分頁」。分頁列 1–6 頁與 54 筆/每頁 10 筆一致。【Alice 判定待補】｜2026-07-30 同步：Jira 已於 7/29 15:15 轉「完成」，自 pending 歸檔（AC 內容無更改）。"
+        },
+        {
+          "key": "AC2",
+          "desc": "【中·查詢】搜尋：訂單編號、訂購者電話之類可識別訂單的資訊（Jira 原文；實作為 訂單編號＋商品名稱）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 搜尋走後端參數 keyword=：搜「20260703000051」（7/3 舊單，從未載入至前端分頁）可命中 1 筆 → 證明為後端搜尋、非前端過濾 ✓；商品名稱「瑪利歐」→ 5 筆 ✓（API: /next/api/admin/orders?...&keyword=）。UI placeholder 為「搜尋訂單編號、商品名稱」；票文提及的「訂購者電話」查詢未實作於此欄（票內屬建議方向非硬性條件，供 Alice 判定參考）。【Alice 判定待補】｜2026-07-30 同步：Jira 已於 7/29 15:15 轉「完成」，自 pending 歸檔（AC 內容無更改）。"
+        },
+        {
+          "key": "AC3",
+          "desc": "【低·統計】狀態數量統計：各狀態顯示筆數，方便後台人員快速掌握現況（Jira 原文；票內原規劃可上線後補）",
+          "status": "pass",
+          "evidence": "【我測到】2026-07-29 訂單管理頂部 tab 顯示各狀態筆數：全部 54／尚未付款 0／待出貨 8／運送中 1／已送達 1／訂單結案 19／退貨/退款 7／訂單不成立 17，低優先項已提前完成 ✓。⚠️ 觀察：各狀態加總 = 53 ≠ 全部 54，疑 1 筆「流程異常」訂單（sprint-13 曾有 20260715000062 全家取貨/流程異常）無歸屬 tab → P3 候選，待確認是否預期行為。【Alice 判定待補】｜2026-07-30 同步：Jira 已於 7/29 15:15 轉「完成」，自 pending 歸檔（AC 內容無更改）。"
+        }
+      ]
+    }
+  ]
+}

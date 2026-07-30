@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>DT Sprint 14 QA 報告</title>
+<style>
+  :root {
+    --pass: #10b981;
+    --fail: #ef4444;
+    --partial: #f59e0b;
+    --skip: #94a3b8;
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+    --accent: #c8a45c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    line-height: 1.6;
+  }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .meta { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; border-left: 4px solid var(--accent); padding-left: 12px; }
+  h3 { font-size: 16px; margin: 20px 0 8px; }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .toolbar button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .toolbar button:hover { background: #f5f5f4; border-color: var(--accent); }
+  .toolbar button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .toolbar button.primary:hover { background: #b08d47; }
+  .toolbar button.danger { color: var(--fail); border-color: #fecaca; }
+  .toolbar .status { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .toolbar .status.saved { color: var(--pass); }
+
+  .verdict {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-left: 6px solid var(--pass);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+  .verdict h2 { border: none; padding: 0; margin: 0 0 4px; color: #065f46; font-size: 18px; }
+  .verdict p { margin: 4px 0 0; font-size: 14px; }
+  .verdict.tone-partial { background: #fffbeb; border-color: #fde68a; border-left-color: var(--partial); }
+  .verdict.tone-partial h2 { color: #92400e; }
+  .verdict.tone-fail { background: #fef2f2; border-color: #fecaca; border-left-color: var(--fail); }
+  .verdict.tone-fail h2 { color: #991b1b; }
+
+  .overall {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+
+  .bar {
+    height: 12px;
+    background: #f5f5f4;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; }
+  .bar-multi { display: flex; }
+  .bar-seg { height: 100%; }
+  .bar-pass { background: var(--pass); }
+  .bar-fail { background: var(--fail); }
+  .bar-partial { background: var(--partial); }
+  .bar-skip { background: var(--skip); }
+
+  .manual-progress {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 200px 1fr 100px;
+    gap: 16px; align-items: center;
+  }
+  .manual-progress .label { font-size: 14px; color: #065f46; font-weight: 600; }
+  .manual-progress .value { text-align: right; font-weight: 600; color: #065f46; }
+
+  table.tickets {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 14px;
+  }
+  table.tickets thead {
+    background: #f5f5f4;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  table.tickets th, table.tickets td {
+    padding: 12px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  table.tickets tbody tr:last-child td { border-bottom: none; }
+  table.tickets .col-expand { width: 32px; text-align: center; cursor: pointer; user-select: none; }
+  table.tickets .col-ticket { width: 70px; font-weight: 600; }
+  table.tickets .col-status { width: 90px; }
+  table.tickets .col-ac { width: 200px; }
+  table.tickets .col-done { width: 60px; text-align: center; }
+  table.tickets .col-note { width: 260px; }
+
+  .expand-caret {
+    display: inline-block;
+    transition: transform 0.2s;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  tr.expanded .expand-caret { transform: rotate(90deg); }
+
+  .chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chip-pass { background: #d1fae5; color: #065f46; }
+  .chip-fail { background: #fee2e2; color: #991b1b; }
+  .chip-partial { background: #fef3c7; color: #92400e; }
+  .chip-skip { background: #f1f5f9; color: #475569; }
+
+  .chip-sm {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .ac-mini { display: flex; align-items: center; gap: 8px; }
+  .ac-mini .bar { flex: 1; }
+  .ac-mini-label { font-size: 12px; color: var(--muted); min-width: 60px; text-align: right; }
+
+  .manual-check { display: flex; justify-content: center; align-items: center; }
+  .manual-check input[type="checkbox"] {
+    width: 20px; height: 20px;
+    cursor: pointer; accent-color: var(--pass);
+  }
+  .note-input {
+    width: 100%; min-height: 40px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+    background: #fafaf9;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .note-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: white;
+  }
+  tr.row-done { background: #f0fdf4; }
+  tr.row-done > td { color: #065f46; }
+
+  tr.ac-container > td {
+    background: #fafaf9;
+    padding: 0;
+    border-bottom: 2px solid var(--border);
+  }
+  table.ac-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: transparent;
+  }
+  table.ac-table thead {
+    background: #efeae0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  table.ac-table th, table.ac-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.ac-table tbody tr:last-child td { border-bottom: none; }
+  table.ac-table .col-ac-key { width: 60px; font-weight: 600; color: var(--accent); }
+  table.ac-table .col-ac-status { width: 80px; }
+  table.ac-table .col-ac-done { width: 60px; text-align: center; }
+  table.ac-table .col-ac-note { width: 260px; }
+  table.ac-table .ac-desc { color: var(--text); line-height: 1.5; }
+  table.ac-table tr.ac-done { background: #f0fdf4; }
+
+  code { background: #f5f5f4; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  a { color: #0369a1; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .modal-mask {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-mask.show { display: flex; }
+  .modal {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 800px; width: 90%;
+    max-height: 85vh;
+    display: flex; flex-direction: column;
+  }
+  .modal h3 { margin: 0 0 12px; }
+  .modal textarea {
+    flex: 1; min-height: 400px; width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 12px; line-height: 1.5;
+    resize: none;
+  }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+
+  .sprint-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--border);
+    margin: 0 0 16px;
+    padding: 0;
+  }
+  .sprint-tab {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sprint-tab:hover { color: var(--text); background: #f5f5f4; }
+  .sprint-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: transparent;
+  }
+  .sprint-tab .badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: var(--border);
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .sprint-tab.active .badge { background: var(--accent); color: white; }
+
+  .summary-headline { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .summary-icon { font-size: 44px; line-height: 1; }
+  .summary-text { flex: 1; }
+  .summary-title { font-size: 22px; font-weight: 700; line-height: 1.2; }
+  .summary-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .summary-bar { height: 20px; margin-bottom: 20px; }
+  .summary-bar .bar-multi { height: 100%; }
+  .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 6px; font-weight: 600; letter-spacing: 0.3px; }
+  .stat-card.pass .stat-num { color: var(--pass); }
+  .stat-card.fail .stat-num { color: var(--fail); }
+  .stat-card.partial .stat-num { color: var(--partial); }
+  .stat-card.skip .stat-num { color: var(--skip); }
+  .stat-card.pass.hot { background: #ecfdf5; border-color: #a7f3d0; }
+
+  .load-error {
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;
+    padding: 16px 20px; color: #991b1b; font-size: 14px; margin: 24px 0;
+  }
+</style>
+</head>
+<body>
+
+<nav class="sprint-tabs">
+  <a href="../sprint-14/report.html" class="sprint-tab active">Sprint 14 <span class="badge" id="tab-badge">…</span></a>
+  <a href="../sprint-13/report.html" class="sprint-tab">Sprint 13 <span class="badge">19</span></a>
+  <a href="../sprint-12/report.html" class="sprint-tab">Sprint 12 <span class="badge">20</span></a>
+</nav>
+
+<h1 id="page-title">DT Sprint 14 · QA 報告</h1>
+<div class="meta" id="page-meta">載入中…</div>
+
+<div class="toolbar">
+  <button class="primary" onclick="showExport()">📋 匯出給 Claude</button>
+  <button onclick="downloadMd()">💾 下載 .md</button>
+  <button onclick="expandAll()">▽ 全部展開</button>
+  <button onclick="collapseAll()">△ 全部收合</button>
+  <button class="danger" onclick="clearAll()">🗑 清空手動紀錄</button>
+  <div class="status" id="save-status">本機自動儲存中</div>
+</div>
+
+<div id="load-error-box" class="load-error" style="display:none;">
+  ⚠️ 讀不到 data.json。請透過網站網址開啟本頁（直接開本機檔案會被瀏覽器擋掉資料載入）。
+</div>
+
+<div class="verdict" id="verdict-box" style="display:none;">
+  <h2 id="verdict-title"></h2>
+  <p id="verdict-text"></p>
+</div>
+
+<h2>Sprint 進度總覽</h2>
+<div class="overall">
+  <div class="summary-headline">
+    <div class="summary-icon" id="summary-icon"></div>
+    <div class="summary-text">
+      <div class="summary-title" id="summary-title"></div>
+      <div class="summary-sub" id="summary-sub"></div>
+    </div>
+  </div>
+  <div class="bar summary-bar">
+    <div class="bar-multi" style="width: 100%" id="summary-bar"></div>
+  </div>
+  <div class="stat-cards">
+    <div class="stat-card pass" id="card-pass"><div class="stat-num" id="stat-pass">0</div><div class="stat-label">✅ PASS</div></div>
+    <div class="stat-card fail"><div class="stat-num" id="stat-fail">0</div><div class="stat-label">🔴 FAIL</div></div>
+    <div class="stat-card partial"><div class="stat-num" id="stat-partial">0</div><div class="stat-label">🟡 PARTIAL</div></div>
+    <div class="stat-card skip"><div class="stat-num" id="stat-skip">0</div><div class="stat-label">⏭️ 待測</div></div>
+  </div>
+</div>
+
+<div class="manual-progress">
+  <div class="label">✅ 我手動確認完成</div>
+  <div class="bar"><div class="bar-fill bar-pass" id="manual-bar" style="width: 0%"></div></div>
+  <div class="value">
+    <div>票 <span id="manual-count">0</span>/<span id="manual-total">0</span></div>
+    <div style="font-size:11px;font-weight:400;">AC <span id="manual-ac-count">0</span>/<span id="manual-ac-total">0</span></div>
+  </div>
+</div>
+
+<h2 id="pending-header">🧪 RFT 待測</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;" id="pending-sub">自 Jira 同步的 Ready For Test 票。點左邊 ▶ 展開看每條 AC 的驗收狀況與備註</div>
+<table class="tickets">
+  <thead>
+    <tr>
+      <th class="col-expand"></th>
+      <th class="col-ticket">票號</th>
+      <th>標題</th>
+      <th class="col-status">結論</th>
+      <th class="col-ac">AC 覆蓋率</th>
+      <th class="col-done">整張<br>完成</th>
+      <th class="col-note">整張備註</th>
+    </tr>
+  </thead>
+  <tbody id="tickets-body-pending"></tbody>
+</table>
+
+<h2 id="passed-header">✅ 已 PASS 歸檔</h2>
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">驗收通過、Jira 已移至「完成」的票。保留驗收證據與你的手動紀錄</div>
+<table class="tickets">
+  <thead>
+    <tr>
+      <th class="col-expand"></th>
+      <th class="col-ticket">票號</th>
+      <th>標題</th>
+      <th class="col-status">結論</th>
+      <th class="col-ac">AC 覆蓋率</th>
+      <th class="col-done">整張<br>完成</th>
+      <th class="col-note">整張備註</th>
+    </tr>
+  </thead>
+  <tbody id="tickets-body-passed"></tbody>
+</table>
+
+<div class="modal-mask" id="export-modal" onclick="if(event.target===this)hideExport()">
+  <div class="modal">
+    <h3>📋 匯出手動測試紀錄（貼給 Claude）</h3>
+    <textarea id="export-text" readonly></textarea>
+    <div class="modal-actions">
+      <button onclick="copyExport(event)">📄 複製到剪貼簿</button>
+      <button onclick="hideExport()">關閉</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 模板區：這個檔案是固定模板，每次 sprint 同步「只改 data.json」。
+// STORAGE_KEY / EXPAND_KEY 與手動紀錄綁定，改名會讓 Alice 的紀錄消失。
+// ============================================================
+const STORAGE_KEY = 'qa-sprint14-manual-v1';
+const EXPAND_KEY = 'qa-sprint14-expanded-v1';
+
+const STATUS_CHIP = {
+  pass:    { chip: '✅ PASS', short: '✅ Pass' },
+  fail:    { chip: '🔴 FAIL', short: '🔴 Fail' },
+  partial: { chip: '🟡 PARTIAL', short: '🟡 Partial' },
+  skip:    { chip: '⏭️ 未測', short: '⏭️ 未測' },
+};
+
+// ---------- 純函式（可獨立測試，不碰 DOM） ----------
+
+// 一張票的整體結論：有 fail 就 fail、再看 partial、全 pass 才 pass、否則待測
+function deriveTicketStatus(t) {
+  const st = t.acs.map(a => a.status);
+  if (st.includes('fail')) return 'fail';
+  if (st.includes('partial')) return 'partial';
+  if (st.every(s => s === 'pass')) return 'pass';
+  if (st.includes('pass')) return 'partial';
+  return 'skip';
+}
+
+function deriveAcCoverage(t) {
+  const passCount = t.acs.filter(a => a.status === 'pass').length;
+  const total = t.acs.length;
+  const pct = total ? Math.round(passCount / total * 100) : 0;
+  const color = passCount === total && total > 0 ? 'pass' : (passCount > 0 ? 'partial' : 'skip');
+  return { label: `${passCount}/${total}`, pct, color };
+}
+
+function computeStats(tickets) {
+  const stats = { pass: 0, fail: 0, partial: 0, skip: 0, total: tickets.length };
+  tickets.forEach(t => { stats[deriveTicketStatus(t)]++; });
+  return stats;
+}
+
+// 總覽的語氣與文案，全部由數字推導
+function computeSummary(stats) {
+  if (stats.fail > 0) {
+    return { tone: 'fail', icon: '🔴', title: `${stats.fail} FAIL · 需修復`, verdictTitle: `🔴 有 ${stats.fail} 張 FAIL` };
+  }
+  if (stats.partial > 0) {
+    return { tone: 'partial', icon: '🟡', title: `${stats.partial} PARTIAL · 部分通過`, verdictTitle: `🟡 有 ${stats.partial} 張 PARTIAL` };
+  }
+  if (stats.skip > 0) {
+    return { tone: 'partial', icon: '🟡', title: `${stats.pass} PASS · ${stats.skip} 待測`, verdictTitle: `🟡 ${stats.pass} 張 PASS · ${stats.skip} 張待測` };
+  }
+  return { tone: 'pass', icon: '🟢', title: `全通過 · ${stats.pass} 張`, verdictTitle: `🟢 全 PASS（${stats.pass} 張）` };
+}
+
+function computeVerdictText(data) {
+  const parts = [];
+  const passedIds = data.passed.map(t => t.id).join(' · ');
+  const pendingIds = data.pending.map(t => t.id).join(' · ');
+  if (passedIds) parts.push(`${passedIds} 已通過驗收，Jira 已移至「完成」。`);
+  if (pendingIds) parts.push(`${pendingIds} 於 ${data.lastSyncDate} 同步時在 RFT，待驗測。`);
+  if (data.note) parts.push(data.note);
+  return parts.join(' ');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// ---------- 狀態 ----------
+let DATA = null;
+let allTickets = [];
+let state = {};
+let expanded = {};
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  showSaved();
+}
+function loadExpanded() {
+  try { return JSON.parse(localStorage.getItem(EXPAND_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveExpanded() {
+  localStorage.setItem(EXPAND_KEY, JSON.stringify(expanded));
+}
+function ensureTicketState(id) {
+  if (!state[id]) state[id] = { done: false, note: '', acs: {} };
+  if (!state[id].acs) state[id].acs = {};
+  return state[id];
+}
+
+// ---------- 渲染 ----------
+function renderSummary() {
+  const stats = computeStats(allTickets);
+  const summary = computeSummary(stats);
+
+  document.getElementById('tab-badge').textContent = stats.total;
+  document.getElementById('page-title').textContent = `${DATA.sprintLabel} · QA 報告`;
+  document.title = `${DATA.sprintLabel} QA 報告`;
+  document.getElementById('page-meta').textContent =
+    `${DATA.firstTestDate} 首驗 · ${DATA.lastSyncDate} 更新 RFT · Alice 自測 · staging.justplaygame.com.tw · SOP ${DATA.sopVersion}`;
+
+  const box = document.getElementById('verdict-box');
+  box.style.display = '';
+  box.className = 'verdict' + (summary.tone !== 'pass' ? ' tone-' + summary.tone : '');
+  document.getElementById('verdict-title').textContent = `${summary.verdictTitle}｜${DATA.sprintLabel}`;
+  document.getElementById('verdict-text').textContent = computeVerdictText(DATA);
+
+  document.getElementById('summary-icon').textContent = summary.icon;
+  const titleEl = document.getElementById('summary-title');
+  titleEl.textContent = summary.title;
+  titleEl.style.color = `var(--${summary.tone === 'pass' ? 'pass' : summary.tone})`;
+  document.getElementById('summary-sub').textContent =
+    `${DATA.sprintLabel} · ${DATA.lastSyncDate} 更新（首驗 ${DATA.firstTestDate}）`;
+
+  const segs = ['pass', 'fail', 'partial', 'skip']
+    .filter(k => stats[k] > 0)
+    .map(k => `<div class="bar-seg bar-${k}" style="width:${(stats[k] / stats.total * 100).toFixed(1)}%"></div>`)
+    .join('');
+  document.getElementById('summary-bar').innerHTML = segs || '<div class="bar-seg bar-skip" style="width:100%"></div>';
+
+  document.getElementById('stat-pass').textContent = stats.pass;
+  document.getElementById('stat-fail').textContent = stats.fail;
+  document.getElementById('stat-partial').textContent = stats.partial;
+  document.getElementById('stat-skip').textContent = stats.skip;
+  document.getElementById('card-pass').classList.toggle('hot', stats.pass > 0);
+
+  document.getElementById('pending-header').textContent = `🧪 RFT 待測 · ${DATA.pending.length} 張`;
+  document.getElementById('pending-sub').textContent =
+    `${DATA.lastSyncDate} 自 Jira 同步的 Ready For Test 票。點左邊 ▶ 展開看每條 AC 的驗收狀況與備註`;
+  document.getElementById('passed-header').textContent = `✅ 已 PASS 歸檔 · ${DATA.passed.length} 張`;
+}
+
+function renderTickets() {
+  renderGroup(DATA.pending, 'tickets-body-pending');
+  renderGroup(DATA.passed, 'tickets-body-passed');
+  updateManualProgress();
+}
+
+function renderGroup(list, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);">（目前沒有票）</td></tr>';
+    return;
+  }
+  const rows = [];
+  list.forEach(t => {
+    const jiraKey = t.key || ('JUSTPLAY-' + t.id); // 跨專案票（如 DT-18）在 data.json 填 key
+    const status = deriveTicketStatus(t);
+    const cov = deriveAcCoverage(t);
+    const s = ensureTicketState(t.id);
+    const checked = s.done ? 'checked' : '';
+    const note = escapeHtml(s.note || '');
+    const rowClass = s.done ? 'row-done' : '';
+    const isExpanded = expanded[t.id];
+    const expandedClass = isExpanded ? 'expanded' : '';
+    rows.push(`
+      <tr class="${rowClass} ${expandedClass}" id="row-${t.id}">
+        <td class="col-expand" onclick="toggleExpand('${t.id}')">
+          <span class="expand-caret">▶</span>
+        </td>
+        <td class="col-ticket"><a href="https://hihealthtw.atlassian.net/browse/${jiraKey}" target="_blank">${t.id}</a></td>
+        <td>${escapeHtml(t.title)}</td>
+        <td><span class="chip chip-${status}">${STATUS_CHIP[status].chip}</span></td>
+        <td class="col-ac">
+          <div class="ac-mini">
+            <div class="bar"><div class="bar-fill bar-${cov.color}" style="width:${cov.pct}%"></div></div>
+            <div class="ac-mini-label">${cov.label}</div>
+          </div>
+        </td>
+        <td class="col-done">
+          <div class="manual-check">
+            <input type="checkbox" ${checked} onchange="toggleDone('${t.id}', this.checked)">
+          </div>
+        </td>
+        <td class="col-note">
+          <textarea class="note-input" placeholder="整張測試筆記..." oninput="updateNote('${t.id}', this.value)">${note}</textarea>
+        </td>
+      </tr>
+      <tr class="ac-container" id="ac-container-${t.id}" style="display:${isExpanded ? 'table-row' : 'none'};">
+        <td colspan="7">
+          ${renderAcTable(t)}
+        </td>
+      </tr>
+    `);
+  });
+  tbody.innerHTML = rows.join('');
+}
+
+function renderAcTable(t) {
+  const s = ensureTicketState(t.id);
+  const rows = t.acs.map(ac => {
+    const asub = s.acs[ac.key] || {};
+    const checked = asub.done ? 'checked' : '';
+    const note = escapeHtml(asub.note || '');
+    const rowClass = asub.done ? 'ac-done' : '';
+    return `
+      <tr class="${rowClass}">
+        <td class="col-ac-key">${escapeHtml(ac.key)}</td>
+        <td class="ac-desc">
+          <div>${escapeHtml(ac.desc)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">🔍 ${escapeHtml(ac.evidence)}</div>
+        </td>
+        <td class="col-ac-status"><span class="chip-sm chip-${ac.status}">${STATUS_CHIP[ac.status].short}</span></td>
+        <td class="col-ac-done">
+          <div class="manual-check">
+            <input type="checkbox" ${checked} onchange="toggleAcDone('${t.id}','${ac.key}',this.checked)">
+          </div>
+        </td>
+        <td class="col-ac-note">
+          <textarea class="note-input" placeholder="這條 AC 的補測筆記..." oninput="updateAcNote('${t.id}','${ac.key}',this.value)">${note}</textarea>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  return `
+    <table class="ac-table">
+      <thead>
+        <tr>
+          <th class="col-ac-key">編號</th>
+          <th>AC 描述 + 自動驗收證據</th>
+          <th class="col-ac-status">自動判定</th>
+          <th class="col-ac-done">手動<br>OK</th>
+          <th class="col-ac-note">單條備註</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+// ---------- 互動 ----------
+function toggleExpand(id) {
+  expanded[id] = !expanded[id];
+  saveExpanded();
+  const row = document.getElementById(`row-${id}`);
+  const container = document.getElementById(`ac-container-${id}`);
+  if (expanded[id]) {
+    row.classList.add('expanded');
+    container.style.display = 'table-row';
+  } else {
+    row.classList.remove('expanded');
+    container.style.display = 'none';
+  }
+}
+
+function expandAll() {
+  allTickets.forEach(t => { expanded[t.id] = true; });
+  saveExpanded();
+  renderTickets();
+}
+function collapseAll() {
+  allTickets.forEach(t => { expanded[t.id] = false; });
+  saveExpanded();
+  renderTickets();
+}
+
+function toggleDone(id, done) {
+  const s = ensureTicketState(id);
+  s.done = done;
+  s.doneAt = done ? new Date().toISOString() : null;
+  // Alice 規則：母勾 → 子 AC 全勾；取消母 → 子 AC 全取消
+  const t = allTickets.find(x => x.id === id);
+  const now = new Date().toISOString();
+  t.acs.forEach(ac => {
+    if (!s.acs[ac.key]) s.acs[ac.key] = {};
+    s.acs[ac.key].done = done;
+    s.acs[ac.key].doneAt = done ? now : null;
+  });
+  saveState();
+  renderTickets();
+}
+
+function updateNote(id, note) {
+  const s = ensureTicketState(id);
+  s.note = note;
+  s.noteAt = new Date().toISOString();
+  saveState();
+}
+
+function toggleAcDone(ticketId, acKey, done) {
+  const s = ensureTicketState(ticketId);
+  if (!s.acs[acKey]) s.acs[acKey] = {};
+  s.acs[acKey].done = done;
+  s.acs[acKey].doneAt = done ? new Date().toISOString() : null;
+  saveState();
+  renderTickets();
+}
+
+function updateAcNote(ticketId, acKey, note) {
+  const s = ensureTicketState(ticketId);
+  if (!s.acs[acKey]) s.acs[acKey] = {};
+  s.acs[acKey].note = note;
+  s.acs[acKey].noteAt = new Date().toISOString();
+  saveState();
+}
+
+function updateManualProgress() {
+  const doneTickets = allTickets.filter(t => state[t.id] && state[t.id].done).length;
+  document.getElementById('manual-count').textContent = doneTickets;
+  document.getElementById('manual-total').textContent = allTickets.length;
+  document.getElementById('manual-bar').style.width =
+    (allTickets.length ? Math.round(doneTickets / allTickets.length * 100) : 0) + '%';
+
+  let totalAcs = 0, doneAcs = 0;
+  allTickets.forEach(t => {
+    totalAcs += t.acs.length;
+    t.acs.forEach(ac => {
+      if (state[t.id] && state[t.id].acs && state[t.id].acs[ac.key] && state[t.id].acs[ac.key].done) {
+        doneAcs++;
+      }
+    });
+  });
+  document.getElementById('manual-ac-count').textContent = doneAcs;
+  document.getElementById('manual-ac-total').textContent = totalAcs;
+}
+
+let saveTimer;
+function showSaved() {
+  const el = document.getElementById('save-status');
+  el.textContent = '✓ 已儲存';
+  el.classList.add('saved');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    el.textContent = '本機自動儲存中';
+    el.classList.remove('saved');
+  }, 1500);
+}
+
+// ---------- 匯出 ----------
+function buildExport() {
+  const now = new Date();
+  const ts = now.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+  let md = `# ${DATA.sprintLabel} QA 手動測試紀錄\n\n`;
+  md += `**匯出時間**：${ts}\n`;
+  md += `**執行**：Alice · staging.justplaygame.com.tw\n\n`;
+  const doneTickets = allTickets.filter(t => state[t.id] && state[t.id].done).length;
+  let totalAcs = 0, doneAcs = 0;
+  allTickets.forEach(t => {
+    totalAcs += t.acs.length;
+    t.acs.forEach(ac => {
+      if (state[t.id] && state[t.id].acs && state[t.id].acs[ac.key] && state[t.id].acs[ac.key].done) doneAcs++;
+    });
+  });
+  md += `**整張手動完成**：${doneTickets}/${allTickets.length}\n`;
+  md += `**AC 逐條手動完成**：${doneAcs}/${totalAcs}\n\n---\n\n`;
+
+  const sections = [
+    { label: '🧪 RFT 待測', list: DATA.pending },
+    { label: '✅ 已 PASS 歸檔', list: DATA.passed },
+  ];
+  sections.forEach(sec => {
+    if (!sec.list.length) return;
+    md += `## ${sec.label}\n\n`;
+    sec.list.forEach(t => {
+      const status = deriveTicketStatus(t);
+      const cov = deriveAcCoverage(t);
+      const s = state[t.id] || { acs: {} };
+      const doneMark = s.done ? '✅' : '⬜';
+      md += `### ${doneMark} ${t.key || ('JUSTPLAY-' + t.id)} · ${t.title}\n`;
+      md += `- **自動判定**：${STATUS_CHIP[status].chip} · AC ${cov.label}\n`;
+      md += `- **整張手動完成**：${s.done ? '是' : '否'}${s.doneAt ? ` (${new Date(s.doneAt).toLocaleString('zh-TW')})` : ''}\n`;
+      md += `- **整張備註**：${s.note ? '\n\n  ' + s.note.replace(/\n/g, '\n  ') : '（空）'}\n\n`;
+      md += `**AC 逐條**：\n\n`;
+      t.acs.forEach(ac => {
+        const asub = (s.acs && s.acs[ac.key]) || {};
+        const acDone = asub.done ? '✅' : '⬜';
+        md += `- ${acDone} **${ac.key}** ${ac.desc}\n`;
+        md += `  - 自動判定：${STATUS_CHIP[ac.status].short}\n`;
+        md += `  - 證據：${ac.evidence}\n`;
+        md += `  - 手動 OK：${asub.done ? '是' : '否'}\n`;
+        if (asub.note) md += `  - 備註：${asub.note.replace(/\n/g, ' / ')}\n`;
+      });
+      md += `\n`;
+    });
+  });
+
+  md += `---\n\n## 給 Claude 的提示\n\n`;
+  md += `這是 ${DATA.sprintLabel} QA 手動測試紀錄。每張票的 evidence 欄含「【我測到】客觀觀察」+「【Alice 判定】最終結論」兩層。若 Alice 貼給你，優先看 Alice 判定；「我測到」是備援證據。\n`;
+  return md;
+}
+
+function showExport() {
+  document.getElementById('export-text').value = buildExport();
+  document.getElementById('export-modal').classList.add('show');
+}
+function hideExport() {
+  document.getElementById('export-modal').classList.remove('show');
+}
+function copyExport(e) {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  document.execCommand('copy');
+  const btn = e.target;
+  const orig = btn.textContent;
+  btn.textContent = '✓ 已複製';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+function downloadMd() {
+  const md = buildExport();
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,16).replace(/[-:T]/g, '');
+  const slug = DATA.sprintLabel.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  a.href = url;
+  a.download = `qa-${slug}-manual-${stamp}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function clearAll() {
+  if (!confirm('確定清空所有手動勾選與備註（票層 + AC 層）？此動作不可復原。')) return;
+  state = {};
+  localStorage.removeItem(STORAGE_KEY);
+  renderTickets();
+  showSaved();
+}
+
+// ---------- 啟動 ----------
+async function init() {
+  state = loadState();
+  expanded = loadExpanded();
+  try {
+    const res = await fetch('data.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    DATA = await res.json();
+  } catch (e) {
+    document.getElementById('load-error-box').style.display = '';
+    document.getElementById('page-meta').textContent = '資料載入失敗';
+    return;
+  }
+  allTickets = [...DATA.pending, ...DATA.passed];
+  renderSummary();
+  renderTickets();
+}
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  init();
+}
+</script>
+
+</body>
+</html>
