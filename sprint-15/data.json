@@ -1,0 +1,46 @@
+{
+  "sprintLabel": "DT Sprint 15",
+  "sopVersion": "v1.5",
+  "firstTestDate": "2026-08-04",
+  "lastSyncDate": "2026-08-04",
+  "note": "8/4 首輪：Alice 指定單票 QA（531）。測前檢查（SOP §3.0）：531 於 8/3 14:36 推 RFT、Story 型、票面無正式 AC/DoD（描述僅「延續 sprint14 未做完部分」），驗收依據＝票名主旨（圖片需使用 CDN）＋ eddy 8/3 comment 實作說明（web/admin 兩 app 的 next/image 白名單加 *.cloudfront.net）＋母線 425 的 DoD（x-cache Hit from cloudfront）。重點結果：staging 商品圖已切 CDN（storefront API 全數 cloudfront、0 筆 S3）、CDN 快取 Miss→Hit 正常、web 與 admin 兩端 optimizer 白名單皆生效（4 項 pass）；⚠️ 觀察一項 fail：首頁 SSR/ISR 產出的 HTML 商品圖仍全為 S3 直連（173 次、cloudfront 0 次；s-maxage=60 已多輪重生，非舊快取）→ 首頁 SSR 資料路徑與 storefront API 走不同條路，建議 P2 開票（草稿見對話回報）。另記：正式機 storefront API 仍回 S3 直連（後端切換未部署至 prod，隨 582 Release 需納入檢查清單），但正式機前端 optimizer 已放行 cloudfront（前端程式已部署）。本輪全程唯讀（curl header/API 檢查），未動 staging 資料。",
+  "passed": [],
+  "pending": [
+    {
+      "id": "531",
+      "title": "前端資源進 CDN（2）圖片需使用 CDN",
+      "acs": [
+        {
+          "key": "DoD1",
+          "desc": "商品圖片 URL 改由 CloudFront CDN 供應（票名主旨；後端傳給前端的路徑用 CDN，即 sprint-14 425 未達成項）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 staging storefront API（/next/api/storefront/products?page=1&perPage=5）回應內 18 個圖片 URL 全數為 https://d3qsi2trshrz6o.cloudfront.net/product/images/…、0 筆 S3 直連 → 後端傳給前端的商品圖路徑已切 CDN。⚠️ 正式機對照：www 同查詢 22 個 URL 仍全為 just-e-commerce-prod.s3.us-west-2.amazonaws.com 直連 → prod 後端尚未切換，屬部署節奏，582 Release 時需納入檢查。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD2",
+          "desc": "圖片回應經 CloudFront 快取（x-cache: Hit from cloudfront，對齊母線 425 DoD）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 curl -sI 商品圖 d3qsi2trshrz6o.cloudfront.net/product/images/01KY9BQPNG…PY.png：第 1 次 x-cache: Miss from cloudfront、第 2 次 Hit from cloudfront，HTTP/2 200、via CloudFront → CDN 快取生效。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD3",
+          "desc": "web app 的 next/image 白名單放行 *.cloudfront.net（eddy comment 實作範疇 1/2）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 staging 前台 optimizer /_next/image?url=<CloudFront 商品圖>&w=640&q=75 → HTTP 200、content-type image/png，無 hostname not configured 錯誤 → web 白名單生效。另測正式機前台 optimizer 同樣 200 → 前端白名單程式已部署至 prod。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD4",
+          "desc": "admin app 的 next/image 白名單放行 *.cloudfront.net（eddy comment 實作範疇 2/2：web/admin 一次補齊）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 staging-bo 後台 optimizer /_next/image?url=<同一 CloudFront 圖>&w=640&q=75 → HTTP 200、image/png（optimizer 端點不需登入可直驗）→ admin 白名單生效。【Alice 判定待補】"
+        },
+        {
+          "key": "OBS1",
+          "desc": "【觀察·bug 候選】首頁 SSR/ISR 產出的商品圖仍為 S3 直連，未走 CDN",
+          "status": "fail",
+          "evidence": "【我測到】2026-08-04 staging 首頁 HTML：s3.us-west-2.amazonaws.com 出現 173 次、d3qsi2trshrz6o.cloudfront.net 出現 0 次；首頁 x-nextjs-cache: HIT、cache-control: s-maxage=60（每 60 秒重生，測試期間已多輪重生）→ 非舊快取問題，是首頁 SSR 資料路徑仍產 S3 URL，與 storefront API（已回 CDN）走不同條資料路。使用者無感（S3 直連圖仍 200、白名單保留 S3 pattern 無破圖），但「圖片走 CDN」在流量最大的首頁未生效，對活動 2000 人進站的效能目標打折。建議 P2（功能可用有缺陷、sprint 內修），對應票 531/425；bug 單草稿見對話回報。【Alice 判定待補】"
+        }
+      ]
+    }
+  ]
+}
