@@ -3,7 +3,7 @@
   "sopVersion": "v1.5",
   "firstTestDate": "2026-08-04",
   "lastSyncDate": "2026-08-04",
-  "note": "8/4 首輪：Alice 指定單票 QA（531）。測前檢查（SOP §3.0）：531 於 8/3 14:36 推 RFT、Story 型、票面無正式 AC/DoD（描述僅「延續 sprint14 未做完部分」），驗收依據＝票名主旨（圖片需使用 CDN）＋ eddy 8/3 comment 實作說明（web/admin 兩 app 的 next/image 白名單加 *.cloudfront.net）＋母線 425 的 DoD（x-cache Hit from cloudfront）。重點結果：staging 商品圖已切 CDN（storefront API 全數 cloudfront、0 筆 S3）、CDN 快取 Miss→Hit 正常、web 與 admin 兩端 optimizer 白名單皆生效（4 項 pass）；⚠️ 觀察一項 fail：首頁 SSR/ISR 產出的 HTML 商品圖仍全為 S3 直連（173 次、cloudfront 0 次；s-maxage=60 已多輪重生，非舊快取）→ 首頁 SSR 資料路徑與 storefront API 走不同條路，建議 P2 開票（草稿見對話回報）。另記：正式機 storefront API 仍回 S3 直連（後端切換未部署至 prod，隨 582 Release 需納入檢查清單），但正式機前端 optimizer 已放行 cloudfront（前端程式已部署）。本輪全程唯讀（curl header/API 檢查），未動 staging 資料。",
+  "note": "8/4 首輪：Alice 指定單票 QA（531）。測前檢查（SOP §3.0）：531 於 8/3 14:36 推 RFT、Story 型、票面無正式 AC/DoD（描述僅「延續 sprint14 未做完部分」），驗收依據＝票名主旨（圖片需使用 CDN）＋ eddy 8/3 comment 實作說明（web/admin 兩 app 的 next/image 白名單加 *.cloudfront.net）＋母線 425 的 DoD（x-cache Hit from cloudfront）。重點結果：staging 商品圖已切 CDN（storefront API 全數 cloudfront、0 筆 S3）、CDN 快取 Miss→Hit 正常、web 與 admin 兩端 optimizer 白名單皆生效（4 項 pass）；⚠️ 觀察一項 fail：首頁 SSR/ISR 產出的 HTML 商品圖仍全為 S3 直連（173 次、cloudfront 0 次；s-maxage=60 已多輪重生，非舊快取）→ 首頁 SSR 資料路徑與 storefront API 走不同條路，建議 P2 開票（草稿見對話回報）。另記：正式機 storefront API 仍回 S3 直連（後端切換未部署至 prod，隨 582 Release 需納入檢查清單），但正式機前端 optimizer 已放行 cloudfront（前端程式已部署）。本輪全程唯讀（curl header/API 檢查），未動 staging 資料。｜8/4 smoke test 收尾：首頁 200＋ISR HIT ✓；QA-A~F 基準商品仍全數缺失（storefront API search 各 0 筆，對照組「瑪利歐」5 筆＝搜尋正常）→ sprint-14 發現的測試資料 blocker 未解，加購物車／Step1／後台改庫存三步無安全測試資料可跑；前台會員側操作亦續卡 Chrome 網域授權。本輪同樣全程唯讀，staging 無資料異動。重建 QA 商品（Confluence 157319178）仍是 sprint 15 QA 前置。",
   "passed": [],
   "pending": [
     {
