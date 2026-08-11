@@ -1,130 +1,196 @@
 {
- "sprintLabel": "DT Sprint 15",
- "sopVersion": "v1.5",
- "firstTestDate": "2026-08-04",
- "lastSyncDate": "2026-08-11",
- "note": "8/4 首輪：Alice 指定單票 QA（531）。測前檢查（SOP §3.0）：531 於 8/3 14:36 推 RFT、Story 型、票面無正式 AC/DoD（描述僅「延續 sprint14 未做完部分」），驗收依據＝票名主旨（圖片需使用 CDN）＋ eddy 8/3 comment 實作說明（web/admin 兩 app 的 next/image 白名單加 *.cloudfront.net）＋母線 425 的 DoD（x-cache Hit from cloudfront）。重點結果：staging 商品圖已切 CDN（storefront API 全數 cloudfront、0 筆 S3）、CDN 快取 Miss→Hit 正常、web 與 admin 兩端 optimizer 白名單皆生效（4 項 pass）；⚠️ 觀察一項 fail：首頁 SSR/ISR 產出的 HTML 商品圖仍全為 S3 直連（173 次、cloudfront 0 次；s-maxage=60 已多輪重生，非舊快取）→ 首頁 SSR 資料路徑與 storefront API 走不同條路，建議 P2 開票（草稿見對話回報）。另記：正式機 storefront API 仍回 S3 直連（後端切換未部署至 prod，隨 582 Release 需納入檢查清單），但正式機前端 optimizer 已放行 cloudfront（前端程式已部署）。本輪全程唯讀（curl header/API 檢查），未動 staging 資料。｜8/4 smoke test 收尾：首頁 200＋ISR HIT ✓；QA-A~F 基準商品仍全數缺失（storefront API search 各 0 筆，對照組「瑪利歐」5 筆＝搜尋正常）→ sprint-14 發現的測試資料 blocker 未解，加購物車／Step1／後台改庫存三步無安全測試資料可跑；前台會員側操作亦續卡 Chrome 網域授權。本輪同樣全程唯讀，staging 無資料異動。重建 QA 商品（Confluence 157319178）仍是 sprint 15 QA 前置。｜2026-08-11 JUSTPLAY-396【前台｜會員登入】忘記密碼流程 單票 QA（Alice 指定）。測前檢查（SOP §3.0）：8/11 11:25 由 Roman 推 RFT（Code Review → Ready For Test）、Story 型、Sprint 15、優先度 High、描述當日更新故用最新版 spec、票面無 DoD 段落故以 13 條 AC 為驗收依據。AC 覆蓋率 13/13 = 100%（無跳過、無跨票借用）。結果：pass 7（AC1/4/8/9/10/12/13）、partial 5（AC2/3/6/7/11）、fail 1（AC5）。主流程 E2E 可跑通：入口 → Email 檢查 → 寄碼 → auto verify → 設新密碼 → 成功頁 → 導回登入 → 新密碼登入成功。兩個實質缺陷：① AC5 Step 2 完全沒有「驗證」primary button（DOM 查詢僅一顆「重新取得驗證碼」）② AC3 Step 2 的 Email 欄位未 disable，使用者可改寫；已用 XHR 攔截確認前端送出的 verify body 仍是 Step 1 鎖定的原 Email （改成 attacker@example.com 後送出的仍為 {email: aliceliao@hihealth.com.tw}）→ **非資安漏洞**，但畫面顯示與實際驗證對象不一致會誤導，正是 AC 要求 disable 的原因。其餘 partial 皆為 helper 文案／顏色與 AC 字面不符（AC2/6/7/11），行為本身正確；AC7 的過期保護（欄位直接 disabled、不打 API）比 AC 描述更嚴謹。AC11 勾 icon 顏色（金棕 vs AC 寫綠色）因 Figma 桌面版未開啟無法對照設計稿，依原則 10 不自行判定，待 Alice/Roman 確認。⚠️ 環境異動聲明：本輪為完成 AC8/11/12/13 必須實際執行密碼重設，**前台會員帳號 aliceliao@hihealth.com.tw 的密碼已由測試中變更，目前為 Justplay0812**（SOP §4 測試帳號段落需同步更新）。另本輪共觸發 6 封驗證碼信、未動任何商品或訂單資料。",
- "passed": [],
- "pending": [
-  {
-   "id": "531",
-   "title": "前端資源進 CDN（2）圖片需使用 CDN",
-   "acs": [
+  "sprintLabel": "DT Sprint 15",
+  "sopVersion": "v1.5",
+  "firstTestDate": "2026-08-04",
+  "lastSyncDate": "2026-08-11",
+  "note": "8/4 首輪：Alice 指定單票 QA（531）。測前檢查（SOP §3.0）：531 於 8/3 14:36 推 RFT、Story 型、票面無正式 AC/DoD（描述僅「延續 sprint14 未做完部分」），驗收依據＝票名主旨（圖片需使用 CDN）＋ eddy 8/3 comment 實作說明（web/admin 兩 app 的 next/image 白名單加 *.cloudfront.net）＋母線 425 的 DoD（x-cache Hit from cloudfront）。重點結果：staging 商品圖已切 CDN（storefront API 全數 cloudfront、0 筆 S3）、CDN 快取 Miss→Hit 正常、web 與 admin 兩端 optimizer 白名單皆生效（4 項 pass）；⚠️ 觀察一項 fail：首頁 SSR/ISR 產出的 HTML 商品圖仍全為 S3 直連（173 次、cloudfront 0 次；s-maxage=60 已多輪重生，非舊快取）→ 首頁 SSR 資料路徑與 storefront API 走不同條路，建議 P2 開票（草稿見對話回報）。另記：正式機 storefront API 仍回 S3 直連（後端切換未部署至 prod，隨 582 Release 需納入檢查清單），但正式機前端 optimizer 已放行 cloudfront（前端程式已部署）。本輪全程唯讀（curl header/API 檢查），未動 staging 資料。｜8/4 smoke test 收尾：首頁 200＋ISR HIT ✓；QA-A~F 基準商品仍全數缺失（storefront API search 各 0 筆，對照組「瑪利歐」5 筆＝搜尋正常）→ sprint-14 發現的測試資料 blocker 未解，加購物車／Step1／後台改庫存三步無安全測試資料可跑；前台會員側操作亦續卡 Chrome 網域授權。本輪同樣全程唯讀，staging 無資料異動。重建 QA 商品（Confluence 157319178）仍是 sprint 15 QA 前置。｜2026-08-11 JUSTPLAY-396【前台｜會員登入】忘記密碼流程 單票 QA（Alice 指定）。測前檢查（SOP §3.0）：8/11 11:25 由 Roman 推 RFT（Code Review → Ready For Test）、Story 型、Sprint 15、優先度 High、描述當日更新故用最新版 spec、票面無 DoD 段落故以 13 條 AC 為驗收依據。AC 覆蓋率 13/13 = 100%（無跳過、無跨票借用）。結果：pass 7（AC1/4/8/9/10/12/13）、partial 5（AC2/3/6/7/11）、fail 1（AC5）。主流程 E2E 可跑通：入口 → Email 檢查 → 寄碼 → auto verify → 設新密碼 → 成功頁 → 導回登入 → 新密碼登入成功。兩個實質缺陷：① AC5 Step 2 完全沒有「驗證」primary button（DOM 查詢僅一顆「重新取得驗證碼」）② AC3 Step 2 的 Email 欄位未 disable，使用者可改寫；已用 XHR 攔截確認前端送出的 verify body 仍是 Step 1 鎖定的原 Email （改成 attacker@example.com 後送出的仍為 {email: aliceliao@hihealth.com.tw}）→ **非資安漏洞**，但畫面顯示與實際驗證對象不一致會誤導，正是 AC 要求 disable 的原因。其餘 partial 皆為 helper 文案／顏色與 AC 字面不符（AC2/6/7/11），行為本身正確；AC7 的過期保護（欄位直接 disabled、不打 API）比 AC 描述更嚴謹。AC11 勾 icon 顏色（金棕 vs AC 寫綠色）因 Figma 桌面版未開啟無法對照設計稿，依原則 10 不自行判定，待 Alice/Roman 確認。⚠️ 環境異動聲明：本輪為完成 AC8/11/12/13 必須實際執行密碼重設，**前台會員帳號 aliceliao@hihealth.com.tw 的密碼已由測試中變更，目前為 Justplay0812**（SOP §4 測試帳號段落需同步更新）。另本輪共觸發 6 封驗證碼信、未動任何商品或訂單資料。｜2026-08-11 第二輪：Alice 指定三票 QA（531 / 597 / 594）。測前檢查（SOP §3.0）：三票皆 Story 型、皆在 Sprint 15、皆 status = Ready For Test；531 於 8/3 14:36 更新（票面無 AC/DoD，沿用 8/4 建立的驗收依據）、597 於 8/6 09:43 更新（有明文「驗收方式：正常回歸測試，確認前台畫面無誤即可」，無編號 AC）、594 於 8/10 10:37 更新（description = null，完全空白）。結果：**531 由 8/4 的 fail 轉為 partial**（原 OBS1「首頁 SSR 仍走 S3」已修復，同一驗法下 S3 173 次→0 次、CloudFront 0 次→173 次；但新發現 OBS2：後台商品圖仍走 S3 直連／Shopee CDN、CloudFront 0 筆，同一 object key 只差 host，代表 CDN 改寫只做在 storefront 那條路）。**597 partial**：明文驗收方式（前台回歸）桌機＋行動版皆 pass、顏色 hex 繞過 token 已清為 0 筆；但 text-[14px] 等仍有 52 個 DOM 元素未收斂（驗收4），且相依套件與時間常數兩類（驗收5/6）從 staging 外部不可觀測、標 skip 待 Roman 提供 diff。**594 fail（退回建議·不接收）**：票面無描述/AC/DoD/setup 步驟，後台 5 個路由全掃＋商品編輯 4 tab＋admin API 欄位皆無庫存 log 產出，DoR-Test 未達標。依原則 10，531 的 OBS2（後台是否在範疇內）與 597 的驗收4（是否要求收斂完成率）兩處用詞方向待 Alice 判定後才能定案 pass/fail，我不自行拍板。⚠️ 環境限制（延續 8/4）：QA-A~F 基準商品仍全數缺失（storefront search 0 筆），前台加入購物車會彈登入 modal、/cart 導向登入頁 → 會員側流程與 smoke 第 3/4 步仍無法執行（我不代輸入密碼）。本輪對前台全程唯讀；後台以 Chrome 密碼管理員 autofill 登入後僅讀取，未修改任何商品或訂單資料。另記兩項與本三票無關的觀察：(1) 首頁 Nintendo／Playstation 兩個輪播區塊是空的，已確認為後端 product-sections API 回 products: []（非前端渲染問題），建議另開票；(2) 商品「測試商品圖片損毀」畫面上的破圖圖示是**圖檔內容本身就是一張破圖圖示的 400x400 PNG**（完整載入、alt=商品主圖），非渲染失敗，勿誤報。",
+  "passed": [],
+  "pending": [
     {
-     "key": "DoD1",
-     "desc": "商品圖片 URL 改由 CloudFront CDN 供應（票名主旨；後端傳給前端的路徑用 CDN，即 sprint-14 425 未達成項）",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-04 staging storefront API（/next/api/storefront/products?page=1&perPage=5）回應內 18 個圖片 URL 全數為 https://d3qsi2trshrz6o.cloudfront.net/product/images/…、0 筆 S3 直連 → 後端傳給前端的商品圖路徑已切 CDN。⚠️ 正式機對照：www 同查詢 22 個 URL 仍全為 just-e-commerce-prod.s3.us-west-2.amazonaws.com 直連 → prod 後端尚未切換，屬部署節奏，582 Release 時需納入檢查。【Alice 判定待補】"
+      "id": "531",
+      "title": "前端資源進 CDN（2）圖片需使用 CDN",
+      "acs": [
+        {
+          "key": "DoD1",
+          "desc": "商品圖片 URL 改由 CloudFront CDN 供應（票名主旨；後端傳給前端的路徑用 CDN，即 sprint-14 425 未達成項）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 staging storefront API（/next/api/storefront/products?page=1&perPage=5）回應內 18 個圖片 URL 全數為 https://d3qsi2trshrz6o.cloudfront.net/product/images/…、0 筆 S3 直連 → 後端傳給前端的商品圖路徑已切 CDN。⚠️ 正式機對照：www 同查詢 22 個 URL 仍全為 just-e-commerce-prod.s3.us-west-2.amazonaws.com 直連 → prod 後端尚未切換，屬部署節奏，582 Release 時需納入檢查。【Alice 判定待補】 ｜【2026-08-11 複驗·擴大樣本】staging storefront API 掃 6 頁共 597 個上架商品、3469 張圖片 URL：d3qsi2trshrz6o.cloudfront.net 3469 張（100%）、S3 直連 0 張、Shopee CDN 0 張、無圖商品 0 個 → 由 8/4 的 5 商品/18 URL 擴大到全上架商品仍 0 例外，DoD1 維持 pass。"
+        },
+        {
+          "key": "DoD2",
+          "desc": "圖片回應經 CloudFront 快取（x-cache: Hit from cloudfront，對齊母線 425 DoD）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 curl -sI 商品圖 d3qsi2trshrz6o.cloudfront.net/product/images/01KY9BQPNG…PY.png：第 1 次 x-cache: Miss from cloudfront、第 2 次 Hit from cloudfront，HTTP/2 200、via CloudFront → CDN 快取生效。【Alice 判定待補】 ｜【2026-08-11 複驗】同張圖第 1 次 RefreshHit、第 2 次 Hit from cloudfront；另驗 optimizer 產出 /_next/image 連打 3 次皆 Hit from cloudfront（age: 86）、/_next/static chunk 第 2 次起 Hit → 邊緣快取在圖片與靜態資源兩條路都生效。"
+        },
+        {
+          "key": "DoD3",
+          "desc": "web app 的 next/image 白名單放行 *.cloudfront.net（eddy comment 實作範疇 1/2）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 staging 前台 optimizer /_next/image?url=<CloudFront 商品圖>&w=640&q=75 → HTTP 200、content-type image/png，無 hostname not configured 錯誤 → web 白名單生效。另測正式機前台 optimizer 同樣 200 → 前端白名單程式已部署至 prod。【Alice 判定待補】 ｜【2026-08-11 複驗＋負向測試】web optimizer 對 CloudFront 圖回 200（x-nextjs-cache: HIT）；改用未白名單網域 example.com → HTTP 400（正確擋下）→ 白名單是「放行 cloudfront」而非「全開」。另測不存在的第三方 distribution d111111abcdef8.cloudfront.net → 500（host 過關、抓不到檔），證實 eddy 自述的 *.cloudfront.net wildcard 確實放行全世界的 CloudFront，與其 comment 內 TODO[temp]「待收斂為自家網域」一致 → 屬已知短期權衡，建議列 P3 追蹤。"
+        },
+        {
+          "key": "DoD4",
+          "desc": "admin app 的 next/image 白名單放行 *.cloudfront.net（eddy comment 實作範疇 2/2：web/admin 一次補齊）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-04 staging-bo 後台 optimizer /_next/image?url=<同一 CloudFront 圖>&w=640&q=75 → HTTP 200、image/png（optimizer 端點不需登入可直驗）→ admin 白名單生效。【Alice 判定待補】 ｜【2026-08-11 複驗＋負向測試】staging-bo optimizer 對 CloudFront 圖回 200、對 example.com 回 400 → admin 白名單同樣「放行 cloudfront、擋其他」，設定層面 pass。⚠️ 但白名單只決定「允不允許」，不決定「圖片實際指向哪」——實際指向見 OBS2。"
+        },
+        {
+          "key": "OBS1",
+          "desc": "【8/4 記為 fail → 8/11 複驗已修復】首頁 SSR/ISR 產出的 HTML 商品圖是否走 CDN",
+          "status": "pass",
+          "evidence": "【8/4 原始發現】staging 首頁 HTML：s3.us-west-2.amazonaws.com 173 次、cloudfront 0 次 → 判 fail、建議 P2。 ｜【2026-08-11 複驗·已修復】用同一種驗法重抓首頁 HTML：s3.us-west-2.amazonaws.com **0 次**、amazonaws.com 全部字串 **0 次**、d3qsi2trshrz6o.cloudfront.net **173 次** → 同一個 173 的計數，host 整批從 S3 翻成 CloudFront，不是抽樣差異。加 cache-buster 參數重抓（?qa=<timestamp>）結果一致，排除舊快取。另比對分類頁：/categories 356 次 cloudfront / 0 次 amazonaws、/categories/電玩遊戲片/Switch遊戲 356 / 0、商品頁 10 張圖全 cloudfront。瀏覽器端複驗：首頁 21 張圖 0 張破圖，8 張商品圖經 optimizer 指向 cloudfront；PDP 19 張圖 15 張 CDN、0 破圖。→ 首頁 SSR 資料路徑已與 storefront API 對齊，OBS1 轉 pass、無需開 P2 票。【Alice 判定待補】"
+        },
+        {
+          "key": "OBS2",
+          "desc": "【新發現·8/11】後台（staging-bo）商品圖仍未走 CDN — 範疇是否含後台需 Alice 判定",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 以 admin session 直打後台 API /next/api/admin/products?page=1&perPage=20：回傳圖片 URL host 分布 = just-e-commerce-staging.s3.us-west-2.amazonaws.com 2 張、s-cf-tw.shopeesz.com（Shopee CDN，蝦皮匯入商品）137 張、**CloudFront 0 張**。後台商品列表畫面上 25 張縮圖全部經 /_next/image?url=<S3 URL> 載入（有正常顯示、無破圖）。關鍵對照：同一個商品「測試商品上架同步到測試 0729」，後台 API 回 https://just-e-commerce-staging.s3.us-west-2.amazonaws.com/product/images/01KYPH099KTA2N39Y4X571YGKT.jpg、前台 API 回 https://d3qsi2trshrz6o.cloudfront.net/product/images/01KYPH099KTA2N39Y4X571YGKT.jpg → **同一個 object key、只差 host**，代表 CDN 改寫只做在 storefront 那條資料路，後台那條沒做。另查 Shopee URL 商品目前 status 皆為 Inactive（前台查詢回 404），故未流到前台；但若日後上架，改寫邏輯是否會把 shopeesz.com 也轉成自家 CDN 未經驗證（未動 staging 資料，故未實測上架）。⚠️ 依 SOP 原則 10 不自行判 fail：531 票面無 AC，「前端資源進 CDN」的範疇是「前台 only」還是「前台＋後台」屬用詞方向問題。eddy 8/3 comment 明確寫「商品圖在前台展示與後台管理皆會出現，一次補齊」→ 傾向後台在範疇內；但他補齊的是白名單（允許清單），不是圖片來源。請 Alice 判定：(a) 後台不在範疇 → 本條轉 pass，531 可收；(b) 後台在範疇 → 本條轉 fail，531 退回並請 eddy 補後台的 CDN 改寫（建議 P2：後台使用者僅內部人員、圖片仍正常顯示，不影響前台效能目標）。【Alice 判定待補】"
+        }
+      ]
     },
     {
-     "key": "DoD2",
-     "desc": "圖片回應經 CloudFront 快取（x-cache: Hit from cloudfront，對齊母線 425 DoD）",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-04 curl -sI 商品圖 d3qsi2trshrz6o.cloudfront.net/product/images/01KY9BQPNG…PY.png：第 1 次 x-cache: Miss from cloudfront、第 2 次 Hit from cloudfront，HTTP/2 200、via CloudFront → CDN 快取生效。【Alice 判定待補】"
+      "id": "396",
+      "title": "【前台｜會員登入】忘記密碼流程",
+      "acs": [
+        {
+          "key": "AC1",
+          "desc": "忘記密碼入口：登入頁點「忘記密碼？」→ 導向 Step 1 忘記密碼畫面",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 12:00 staging 登入頁點「忘記密碼」→ 切換到 Step 1：標題「忘記密碼」、說明「輸入註冊的 Email，我們會寄 6 位數驗證碼確認是您本人」、Email 欄位 +「取得驗證碼」按鈕，導向正確。⚠️ 文字差異：實作為「忘記密碼」（無問號、button 元素），AC 寫「忘記密碼？」連結；純文案細節，不影響行為。【Alice 判定待補】"
+        },
+        {
+          "key": "AC2",
+          "desc": "Email 格式檢查：輸入非法格式點「取得驗證碼」→ 邊框紅 + helper「請輸入有效的 Email 格式」+ 不呼叫寄送 API",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 輸入 aliceliao.hihealth.com.tw（缺 @）點「取得驗證碼」：① 邊框轉紅 ✅ ② Network 全程只有頁面載入的 storefront 請求、**無任何 password-reset/send 呼叫** ✅（AC 最關鍵的「不呼叫 API」有做到）。❌ helper 文案為「請填寫正確的Email」，AC 指定「請輸入有效的 Email 格式」→ 文案不符（另「正確的Email」中間缺半形空格）。行為 2/3 達成。【Alice 判定待補】"
+        },
+        {
+          "key": "AC3",
+          "desc": "取得驗證碼成功：進 Step 2、Email 欄位 disable、6 位驗證碼欄位、10 分鐘倒數、「沒收到驗證碼？重新取得」text link",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 輸入 aliceliao@hihealth.com.tw 點「取得驗證碼」→ POST /next/api/storefront/member/password-reset/send 回 200，進入 Step 2。✅ 出現 6 位驗證碼欄位（maxLength=6）✅ 顯示「剩餘 10 分鐘」且實測會遞減（10→9→…→0）。❌ **Email 欄位未 disable**：DOM 實測 disabled=false、readOnly=false、白底 cursor:text、無 ant-input-disabled class → 使用者可任意改寫。❌ **無「沒收到驗證碼？重新取得」text link**：改為「重新取得驗證碼 60秒」cooldown 按鈕（倒數中 disabled，數完可點）。→ 5 項中 2 項未達成。【Alice 判定待補】"
+        },
+        {
+          "key": "AC4",
+          "desc": "驗證碼自動驗證：輸入到第 6 位自動呼叫 verify API，通過即進 Step 3",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 兩次實測皆通過：① 先輸入 5 位（12345）+ 按 Enter → Network 無 verify 呼叫（未滿 6 位不觸發，正確）② 補上第 6 位的瞬間即自動送出 POST password-reset/verify（未按任何按鈕）。錯誤碼 123456 → 400；正確碼 857230 → 200 並自動進入 Step 3「設定新密碼」。auto verify 機制完全符合 AC。【Alice 判定待補】"
+        },
+        {
+          "key": "AC5",
+          "desc": "驗證碼手動送出：提供「驗證」primary button（Enter 亦可），未滿 6 位時該按鈕 disable",
+          "status": "fail",
+          "evidence": "【我測到】2026-08-11 Step 2 畫面上**完全沒有「驗證」按鈕**：read_page 與 DOM 查詢（querySelectorAll('button')）在 Step 2 只有一顆按鈕「重新取得驗證碼」，找不到任何 primary 送出鈕 → AC 要求的「驗證」按鈕與「未滿 6 位 disable」狀態皆無從成立。備援機制部分：輸入 5 位按 Enter 確實不會送出（未滿 6 位不觸發，方向正確），但 6 位時是 auto verify 接手、非按鈕或 Enter 觸發。判 FAIL（元件未實作）。建議先與 Roman 確認是否因已有 auto verify 而刻意省略；若確認不做，AC5 應回頭修 spec。【Alice 判定待補】"
+        },
+        {
+          "key": "AC6",
+          "desc": "驗證碼錯誤：邊框紅 + helper「驗證碼有誤，請重試」+ 欄位保留可編輯",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 輸入錯誤碼 123456 → verify 回 400，畫面：✅ 欄位邊框轉紅（ant-input-status-error）✅ 欄位仍可編輯（DOM 實測 disabled=false、readOnly=false，灰色只是錯誤態視覺）→ 實際重新輸入正確碼 857230 可直接通關，可重試成立。❌ helper 文案為「驗證碼輸入錯誤」，AC 指定「驗證碼有誤，請重試」→ 文案不符。行為 2/3 達成。【Alice 判定待補】"
+        },
+        {
+          "key": "AC7",
+          "desc": "驗證碼過期：取得後超過 10 分鐘送出 → 橘色 helper「驗證碼已過期，請重新取得」+「重新取得驗證碼」連結；點連結回 Step 1 保留原 Email",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 12:24:05 取得驗證碼 055616（不驗證），放置至 12:34:05 過期後觀察：✅ 倒數歸零時**自動**顯示逾期提示（不必等使用者送出，比 AC 更早攔截）✅ 驗證碼欄位轉為 disabled=true（實測無法輸入、送不出去，前端完全不打 verify API，行為比 AC 描述更安全）✅ 點「重新取得驗證碼」→ 立即重寄、倒數重置 10 分鐘、欄位恢復可輸入、**Email 保留在畫面上**。❌ helper 文案為「已逾期，請點擊「重新取得驗證碼」」，AC 指定「驗證碼已過期，請重新取得」。❌ helper 顏色實測 rgb(255,77,79)（class text-danger，紅色），AC 指定**橘色**。❌ 復原元件是就地重取的 button，AC 描述為「連結回 Step 1」→ 互動模式不同（就地重取體驗較順，但與 spec 不一致）。行為佳、3 處與 AC 字面不符。【Alice 判定待補】"
+        },
+        {
+          "key": "AC8",
+          "desc": "設定新密碼成功：輸入合規且一致的新密碼點「重設密碼」→ 呼叫更新密碼 API 並顯示 loading",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 Step 3 輸入 12 碼英數新密碼（兩欄一致）點「重設密碼」→ POST /next/api/storefront/member/password-reset/confirm 回 200，隨即進入成功畫面 → 更新密碼 API 有正確呼叫。⚠️ loading 狀態本輪未截到畫面（API 回應過快，截圖時已切成功頁），此細項未取得視覺證據，非判 fail、列待補。【Alice 判定待補】"
+        },
+        {
+          "key": "AC9",
+          "desc": "密碼規則不符：邊框紅 + helper 顯示規則提示文字",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 兩種違規各測一次：① abc!!（5 字元）→ 新密碼欄位邊框紅 + helper「密碼須為 8-20 字元」② Justplay!!（10 字元含符號，長度合格但字元集違規）→ 邊框紅 + helper「密碼僅能使用英文與數字，且須包含兩者」→ 長度與字元集兩條規則皆有攔截，且兩次 Network 皆**無 confirm 呼叫**（前端擋下，未送後端）。⚠️ 附帶觀察：欄位下方靜態提示寫「8-20 字元，僅能使用英文與數字」，但實際強制「須包含英文與數字兩者」，靜態提示少一個條件，建議補齊（P3 文案）。【Alice 判定待補】"
+        },
+        {
+          "key": "AC10",
+          "desc": "兩次密碼不一致：確認密碼欄位邊框紅 + helper「兩次輸入的密碼不一致」",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 新密碼填 Justplay!!、再次輸入填 abc!! 點「重設密碼」→ 確認密碼欄位邊框轉紅 + helper「**兩次輸入的密碼不一致**」，與 AC 指定文案**完全吻合**；同時未呼叫 confirm API。此條為本票文案唯一完全對齊的一條。【Alice 判定待補】"
+        },
+        {
+          "key": "AC11",
+          "desc": "重設成功：loading 1~2 秒 → 成功畫面（綠色勾 icon +「密碼已重設，請重新登入」）→ 點「返回登入」導回登入頁",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 confirm 回 200 後顯示成功畫面：✅ 有圓框勾 icon ✅ 有導回按鈕，點擊後確實**導回登入頁**，且 Email 欄位自動帶回 aliceliao@hihealth.com.tw（體驗加分）。❌ 勾 icon 顏色為品牌金棕（實測 rgba(0,0,0,0.85) 文字色系、外框金棕），AC 寫「綠色勾 icon」。❌ 標題文案「密碼已重設完成」，AC 指定「密碼已重設，請重新登入」。❌ 按鈕文字「重新登入」，AC 指定「返回登入」。⚠️ 依 SOP 原則 10，勾 icon 顏色屬視覺規格，**Figma 桌面版未開啟無法對照設計稿**，不自行判 fail — 需 Alice 或 Roman 確認以 AC 文字或 Figma 為準。【Alice 判定待補】"
+        },
+        {
+          "key": "AC12",
+          "desc": "設定新密碼頁停滯超過 10 分鐘後點「重設密碼」→ 顯示「畫面停滯過久，請重新驗證身份」",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 12:12:06 通過驗證碼進入 Step 3（verify 回應含 resetToken，expiresAt 對應 12:22:06，正好 10 分鐘），畫面停留不動至 **12:23:10** 才填入合規密碼點「重設密碼」→ 顯示警告 icon + 「**畫面停滯過久，請重新驗證身份**」，與 AC 指定文案**完全吻合**。✅ 同時 Network **無 confirm 呼叫** → 密碼確實未被更動（過期保護有效）✅ 另提供「驗證 Email」按鈕可回 Step 1 重新驗證。⚠️ 附帶觀察：由此按鈕回 Step 1 時 Email 欄位為空、未保留原 Email（AC12 未要求，但與 AC7 的保留行為不一致，列 P3）。【Alice 判定待補】"
+        },
+        {
+          "key": "AC13",
+          "desc": "新密碼設定完成後，登出其他登入裝置",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 以嚴謹方式驗證 session 失效：① 先用第一次重設後的新密碼在前台登入成功（頭像出現），確立「重設前既存 session」② 呼叫 /next/api/storefront/member/me 取得基準線 → **200**，回傳 id/name/email/phone，確認 session 有效 ③ 在不使用該 session 的情況下（重設端點本身不需登入）完成第二次密碼重設 ④ 回頭以同一 session 再呼叫 /me → **401 code=token_expired「Invalid or expired token.」** ⑤ 重新整理前台頁面，右上角頭像退回未登入 icon、/login 不再轉址 → 舊 session 已於伺服器端失效，UI 同步登出。AC13 成立。【Alice 判定待補】"
+        }
+      ]
     },
     {
-     "key": "DoD3",
-     "desc": "web app 的 next/image 白名單放行 *.cloudfront.net（eddy comment 實作範疇 1/2）",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-04 staging 前台 optimizer /_next/image?url=<CloudFront 商品圖>&w=640&q=75 → HTTP 200、content-type image/png，無 hostname not configured 錯誤 → web 白名單生效。另測正式機前台 optimizer 同樣 200 → 前端白名單程式已部署至 prod。【Alice 判定待補】"
+      "id": "597",
+      "title": "[前端] 專案優化（技術債清理）",
+      "acs": [
+        {
+          "key": "驗收1",
+          "desc": "正常回歸測試：前台畫面無誤（桌機 1280px）— 票面唯一明文驗收方式",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 staging 前台桌機 1280x720 逐頁回歸：首頁 200（21 張圖 / 0 破圖 / 無水平溢出 / 30 個 stylesheet 正常載入）、商品頁 PDP 200（19 張圖 / 0 破圖，麵包屑、標題、價格區間 NT$9,780~NT$19,280、規格按鈕 3 顆、數量加減、加入購物車/直接購買皆正常渲染；0 庫存商品的按鈕正確 disabled）、/categories 200、/categories/電玩遊戲片/Switch遊戲 200（各 16 張圖全 CDN）、/about 200、/faq 200、/cart 307→登入頁（登入表單完整渲染）。console 全程 0 錯誤 0 警告；network 除 /videos/switch.mov 的 206 ERR_ABORTED（video seek 中止，播放正常）外無失敗請求。root font-size 16px（=text-sm 14px 與 text-[14px] 同值，換寫法不會位移）。互動實測：PDP 點「加入購物車」→ 正確彈出 ant-modal 登入視窗（元件與事件綁定未被清理破壞）。【Alice 判定待補】"
+        },
+        {
+          "key": "驗收2",
+          "desc": "正常回歸測試：前台畫面無誤（行動版 375px）",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 切 375x812 行動版重載首頁：漢堡選單、logo、購物車/會員 icon、搜尋列、banner 輪播（實際輪播圖有正常顯示）皆正常；21 張圖 0 破圖；document.scrollWidth 375 = viewport 375 → **無頁面層水平捲動**；字級小於 11px 的元素 0 個（無過小文字）。唯一超出視窗的元素是 class 含 w-max 的商品橫向捲動列與其子元素（刻意的橫向 carousel，非破版）。【Alice 判定待補】"
+        },
+        {
+          "key": "驗收3",
+          "desc": "顏色 token 化：票面所述「109 處被寫死成 hex 繞過 token」已清除",
+          "status": "pass",
+          "evidence": "【我測到】2026-08-11 掃 staging 已載入的 30 份 stylesheet 全部 cssRules，搜尋 arbitrary hex 類別（.text-[#xxxxxx] / .bg-[#…] / .border-[#…]）→ **0 筆**；同時掃 DOM 上帶 [# 的 class 屬性 → **0 個元素**。實際宣告的顏色 token 有 12 個（--color-primary-dark / --color-red-400/500 / --color-gray-100~900 / --color-neutral-50 / --color-black / --color-white）。抽驗價格元素：class 為 font-medium text-title **text-primary-dark** whitespace-nowrap，computed color rgb(184,134,11) → 走 token 而非硬寫 hex。另抽驗按鈕/連結最常見 6 組配色，皆為 token 值或 oklab 色域運算結果（Tailwind v4 正常輸出），無殘留硬寫色。→ hex 繞過 token 這一類技術債，就前台 rendered 結果可觀測的範圍內已清乾淨。【Alice 判定待補】"
+        },
+        {
+          "key": "驗收4",
+          "desc": "樣式值寫法統一：票面所述 text-[14px]（98 處）vs text-sm（148 處）、px-[16px] vs px-4 等應收斂為一種",
+          "status": "partial",
+          "evidence": "【我測到】2026-08-11 在 PDP 掃 DOM 全部 class，統計「有 Tailwind 標準等價卻仍用 arbitrary 寫法」的元素：text-[14px] **31 個元素**、md:text-[16px] 17 個、text-[12px] 2 個、text-[16px] 1 個、text-[18px] 1 個 → 單一頁面合計 **52 個元素**仍是 arbitrary 寫法。整頁 arbitrary 類別共 63 種 / 506 次出現（含合理保留的 text-[15px] 12 次、leading-[24px] 13 次、w-[150px] 20 次、rounded-[10px] 19 次、bg-[var(--primary)] 13 次等——15px 與 10px 圓角在 Tailwind 預設無等價值，屬合理保留）。⚠️ 量測邊界說明：這是 **rendered DOM 的元素個數**，一個原始碼位置若被 render 多次會重複計數，因此對應的原始碼處數會少於 31，我無法從 staging 外部推回原始碼行數。⚠️ 依 SOP 原則 10 不自行判 fail：票面把這些寫成「背景」而非編號 AC，明文驗收方式只有「正常回歸測試，確認前台畫面無誤即可」，**沒有設定收斂完成率目標**。請 Alice 判定：(a) 以票面驗收方式為準 → 本條轉 pass，597 可收；(b) 期待三類技術債清完 → 本條轉 fail，請 Roman 說明 text-[14px] 為何仍在（是刻意保留還是漏改）。【Alice 判定待補】"
+        },
+        {
+          "key": "驗收5",
+          "desc": "相依套件清理：6 個宣告未用 + 3 個 import 未宣告（靠 workspace hoisting 才 build 得起來）",
+          "status": "skip",
+          "evidence": "【未測·原因】此項為 package.json 層面的變更，**從 staging 外部完全不可觀測**——我能確認的只有「staging 部署成功且前台可正常運作」，這只證明 build 通過，不能證明 6 個未用相依已移除、3 個未宣告相依已補宣告。驗證方式需 code review（看 package.json diff）或在乾淨環境跑一次獨立安裝＋build，兩者都超出 PM 自測 staging 的範圍。建議請 Roman 在票上貼 package.json diff 或 CI build log 作為證據。（2026-08-11）"
+        },
+        {
+          "key": "驗收6",
+          "desc": "時間常數集中：散在 18 個檔案、寫法與命名不一（STALE_TIME / STRIP_STALE_TIME / CATEGORIES_STALE_TIME / ONE_DAY）",
+          "status": "skip",
+          "evidence": "【未測·原因】時間常數是 client 端 query staleTime 等內部值，從外部只能觀察到「頁面資料有正常載入、快取行為無異常」，無法辨別常數是否已集中到單一模組、命名是否統一。若某個 staleTime 在重構中被寫錯值（例如 5 分鐘變成 1 天），症狀是「後台改資料後前台久久不更新」——這需要實際改後台資料再觀察前台，而本輪因 QA 基準商品缺失（見 note）未動 staging 資料，故未跑此驗證。建議請 Roman 貼 diff，或待 QA-A~F 重建後由 smoke test 第 5 步（後台改庫存→前台同步）覆蓋。（2026-08-11）"
+        }
+      ]
     },
     {
-     "key": "DoD4",
-     "desc": "admin app 的 next/image 白名單放行 *.cloudfront.net（eddy comment 實作範疇 2/2：web/admin 一次補齊）",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-04 staging-bo 後台 optimizer /_next/image?url=<同一 CloudFront 圖>&w=640&q=75 → HTTP 200、image/png（optimizer 端點不需登入可直驗）→ admin 白名單生效。【Alice 判定待補】"
-    },
-    {
-     "key": "OBS1",
-     "desc": "【觀察·bug 候選】首頁 SSR/ISR 產出的商品圖仍為 S3 直連，未走 CDN",
-     "status": "fail",
-     "evidence": "【我測到】2026-08-04 staging 首頁 HTML：s3.us-west-2.amazonaws.com 出現 173 次、d3qsi2trshrz6o.cloudfront.net 出現 0 次；首頁 x-nextjs-cache: HIT、cache-control: s-maxage=60（每 60 秒重生，測試期間已多輪重生）→ 非舊快取問題，是首頁 SSR 資料路徑仍產 S3 URL，與 storefront API（已回 CDN）走不同條資料路。使用者無感（S3 直連圖仍 200、白名單保留 S3 pattern 無破圖），但「圖片走 CDN」在流量最大的首頁未生效，對活動 2000 人進站的效能目標打折。建議 P2（功能可用有缺陷、sprint 內修），對應票 531/425；bug 單草稿見對話回報。【Alice 判定待補】"
+      "id": "594",
+      "title": "庫存Log紀錄",
+      "acs": [
+        {
+          "key": "DoR-1",
+          "desc": "【退回建議·不接收】DoR-Test 未達標：票面無描述、無 AC、無 DoD、無測試 setup 步驟",
+          "status": "fail",
+          "evidence": "【我測到】2026-08-11 拉 Jira JUSTPLAY-594：**description 欄位為 null（完全空白）**，無 AC、無 DoD、無 issue links、無 parent（Alice 已於 8/10 10:37 留言「請增加父層」，尚未補）。Story 型、Sprint 15、Medium、Joe、8/10 10:37 最後更新、status = Ready For Test。唯一可用資訊是票名五個字「庫存Log紀錄」。依 SOP §2 DoR-Test：「AC 全部已實作」「若需要特殊測試資料，已在 ticket 留 setup 步驟」皆無從確認，規定為「任何一項沒做，PM 直接把 ticket 退回 In Progress，不接收」。→ 本條判 fail 的是**驗收前置條件**，不是「功能壞掉」；我無法證明 Joe 沒做，只能證明**這張票沒有給出任何可驗收的東西**。建議動作：退回 In Progress，請 Joe 補三件事 —— (1) 這張要交付什麼（DB log table？後台畫面？API？）(2) PM 怎麼驗（步驟）(3) 補父層 Epic。【Alice 判定待補】"
+        },
+        {
+          "key": "查證-1",
+          "desc": "後台是否存在任何庫存 Log 可查介面（窮盡搜尋紀錄）",
+          "status": "skip",
+          "evidence": "【我查到·非結論】2026-08-11 以 admin 身分登入 staging-bo 窮盡找過，**沒有任何庫存 log 介面**：① 側邊選單只有 2 群 3 項：商品管理（商品總覽 /products/list、新增商品 /products/create）、訂單追蹤（訂單管理 /orders/list）——無庫存/紀錄/Log 相關項目。② 頁面路由探測（後台未知頁面會回真 404，可信）：/inventory、/inventory/list、/inventory-logs、/inventory/logs、/stock、/stock/list、/stock/logs、/stock-logs、/logs、/products/inventory、/products/stock、/products/logs、/reports、/settings **全部 404**；只有 /products/list 與 /orders/list 回 200。③ 商品編輯頁（/products/<id>/edit）只有 4 個 tab：基本資料、商品描述、銷售資訊、運費；有「商品數量」欄位但**無任何庫存變動紀錄區塊**。④ 後台商品明細 API 回應欄位：商品層 20 個、SKU 層 10 個，stock 只有 {totalStock, availableStock}，含 log/history/record/紀錄 字樣的欄位 **0 個**。⑤ 訂單列表無詳情連結（tbody tr = 0、無 /orders/<id> 連結），故訂單側也無庫存紀錄可看。⚠️ 標 skip 不標 fail 的理由：API 路徑探測不可信——後台任何**不存在**的 API 路徑都回 500 （實測 /next/api/admin/zzz-definitely-not-a-route 也回 500 unknown_error），所以我無法排除「log 寫在 DB / 應用程式日誌，只是沒有前端介面」這個可能。若屬後端 only，PM 端無法驗收，需 Joe 提供查詢方式或截圖。（2026-08-11）"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "396",
-   "title": "【前台｜會員登入】忘記密碼流程",
-   "acs": [
-    {
-     "key": "AC1",
-     "desc": "忘記密碼入口：登入頁點「忘記密碼？」→ 導向 Step 1 忘記密碼畫面",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 12:00 staging 登入頁點「忘記密碼」→ 切換到 Step 1：標題「忘記密碼」、說明「輸入註冊的 Email，我們會寄 6 位數驗證碼確認是您本人」、Email 欄位 +「取得驗證碼」按鈕，導向正確。⚠️ 文字差異：實作為「忘記密碼」（無問號、button 元素），AC 寫「忘記密碼？」連結；純文案細節，不影響行為。【Alice 判定待補】"
-    },
-    {
-     "key": "AC2",
-     "desc": "Email 格式檢查：輸入非法格式點「取得驗證碼」→ 邊框紅 + helper「請輸入有效的 Email 格式」+ 不呼叫寄送 API",
-     "status": "partial",
-     "evidence": "【我測到】2026-08-11 輸入 aliceliao.hihealth.com.tw（缺 @）點「取得驗證碼」：① 邊框轉紅 ✅ ② Network 全程只有頁面載入的 storefront 請求、**無任何 password-reset/send 呼叫** ✅（AC 最關鍵的「不呼叫 API」有做到）。❌ helper 文案為「請填寫正確的Email」，AC 指定「請輸入有效的 Email 格式」→ 文案不符（另「正確的Email」中間缺半形空格）。行為 2/3 達成。【Alice 判定待補】"
-    },
-    {
-     "key": "AC3",
-     "desc": "取得驗證碼成功：進 Step 2、Email 欄位 disable、6 位驗證碼欄位、10 分鐘倒數、「沒收到驗證碼？重新取得」text link",
-     "status": "partial",
-     "evidence": "【我測到】2026-08-11 輸入 aliceliao@hihealth.com.tw 點「取得驗證碼」→ POST /next/api/storefront/member/password-reset/send 回 200，進入 Step 2。✅ 出現 6 位驗證碼欄位（maxLength=6）✅ 顯示「剩餘 10 分鐘」且實測會遞減（10→9→…→0）。❌ **Email 欄位未 disable**：DOM 實測 disabled=false、readOnly=false、白底 cursor:text、無 ant-input-disabled class → 使用者可任意改寫。❌ **無「沒收到驗證碼？重新取得」text link**：改為「重新取得驗證碼 60秒」cooldown 按鈕（倒數中 disabled，數完可點）。→ 5 項中 2 項未達成。【Alice 判定待補】"
-    },
-    {
-     "key": "AC4",
-     "desc": "驗證碼自動驗證：輸入到第 6 位自動呼叫 verify API，通過即進 Step 3",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 兩次實測皆通過：① 先輸入 5 位（12345）+ 按 Enter → Network 無 verify 呼叫（未滿 6 位不觸發，正確）② 補上第 6 位的瞬間即自動送出 POST password-reset/verify（未按任何按鈕）。錯誤碼 123456 → 400；正確碼 857230 → 200 並自動進入 Step 3「設定新密碼」。auto verify 機制完全符合 AC。【Alice 判定待補】"
-    },
-    {
-     "key": "AC5",
-     "desc": "驗證碼手動送出：提供「驗證」primary button（Enter 亦可），未滿 6 位時該按鈕 disable",
-     "status": "fail",
-     "evidence": "【我測到】2026-08-11 Step 2 畫面上**完全沒有「驗證」按鈕**：read_page 與 DOM 查詢（querySelectorAll('button')）在 Step 2 只有一顆按鈕「重新取得驗證碼」，找不到任何 primary 送出鈕 → AC 要求的「驗證」按鈕與「未滿 6 位 disable」狀態皆無從成立。備援機制部分：輸入 5 位按 Enter 確實不會送出（未滿 6 位不觸發，方向正確），但 6 位時是 auto verify 接手、非按鈕或 Enter 觸發。判 FAIL（元件未實作）。建議先與 Roman 確認是否因已有 auto verify 而刻意省略；若確認不做，AC5 應回頭修 spec。【Alice 判定待補】"
-    },
-    {
-     "key": "AC6",
-     "desc": "驗證碼錯誤：邊框紅 + helper「驗證碼有誤，請重試」+ 欄位保留可編輯",
-     "status": "partial",
-     "evidence": "【我測到】2026-08-11 輸入錯誤碼 123456 → verify 回 400，畫面：✅ 欄位邊框轉紅（ant-input-status-error）✅ 欄位仍可編輯（DOM 實測 disabled=false、readOnly=false，灰色只是錯誤態視覺）→ 實際重新輸入正確碼 857230 可直接通關，可重試成立。❌ helper 文案為「驗證碼輸入錯誤」，AC 指定「驗證碼有誤，請重試」→ 文案不符。行為 2/3 達成。【Alice 判定待補】"
-    },
-    {
-     "key": "AC7",
-     "desc": "驗證碼過期：取得後超過 10 分鐘送出 → 橘色 helper「驗證碼已過期，請重新取得」+「重新取得驗證碼」連結；點連結回 Step 1 保留原 Email",
-     "status": "partial",
-     "evidence": "【我測到】2026-08-11 12:24:05 取得驗證碼 055616（不驗證），放置至 12:34:05 過期後觀察：✅ 倒數歸零時**自動**顯示逾期提示（不必等使用者送出，比 AC 更早攔截）✅ 驗證碼欄位轉為 disabled=true（實測無法輸入、送不出去，前端完全不打 verify API，行為比 AC 描述更安全）✅ 點「重新取得驗證碼」→ 立即重寄、倒數重置 10 分鐘、欄位恢復可輸入、**Email 保留在畫面上**。❌ helper 文案為「已逾期，請點擊「重新取得驗證碼」」，AC 指定「驗證碼已過期，請重新取得」。❌ helper 顏色實測 rgb(255,77,79)（class text-danger，紅色），AC 指定**橘色**。❌ 復原元件是就地重取的 button，AC 描述為「連結回 Step 1」→ 互動模式不同（就地重取體驗較順，但與 spec 不一致）。行為佳、3 處與 AC 字面不符。【Alice 判定待補】"
-    },
-    {
-     "key": "AC8",
-     "desc": "設定新密碼成功：輸入合規且一致的新密碼點「重設密碼」→ 呼叫更新密碼 API 並顯示 loading",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 Step 3 輸入 12 碼英數新密碼（兩欄一致）點「重設密碼」→ POST /next/api/storefront/member/password-reset/confirm 回 200，隨即進入成功畫面 → 更新密碼 API 有正確呼叫。⚠️ loading 狀態本輪未截到畫面（API 回應過快，截圖時已切成功頁），此細項未取得視覺證據，非判 fail、列待補。【Alice 判定待補】"
-    },
-    {
-     "key": "AC9",
-     "desc": "密碼規則不符：邊框紅 + helper 顯示規則提示文字",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 兩種違規各測一次：① abc!!（5 字元）→ 新密碼欄位邊框紅 + helper「密碼須為 8-20 字元」② Justplay!!（10 字元含符號，長度合格但字元集違規）→ 邊框紅 + helper「密碼僅能使用英文與數字，且須包含兩者」→ 長度與字元集兩條規則皆有攔截，且兩次 Network 皆**無 confirm 呼叫**（前端擋下，未送後端）。⚠️ 附帶觀察：欄位下方靜態提示寫「8-20 字元，僅能使用英文與數字」，但實際強制「須包含英文與數字兩者」，靜態提示少一個條件，建議補齊（P3 文案）。【Alice 判定待補】"
-    },
-    {
-     "key": "AC10",
-     "desc": "兩次密碼不一致：確認密碼欄位邊框紅 + helper「兩次輸入的密碼不一致」",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 新密碼填 Justplay!!、再次輸入填 abc!! 點「重設密碼」→ 確認密碼欄位邊框轉紅 + helper「**兩次輸入的密碼不一致**」，與 AC 指定文案**完全吻合**；同時未呼叫 confirm API。此條為本票文案唯一完全對齊的一條。【Alice 判定待補】"
-    },
-    {
-     "key": "AC11",
-     "desc": "重設成功：loading 1~2 秒 → 成功畫面（綠色勾 icon +「密碼已重設，請重新登入」）→ 點「返回登入」導回登入頁",
-     "status": "partial",
-     "evidence": "【我測到】2026-08-11 confirm 回 200 後顯示成功畫面：✅ 有圓框勾 icon ✅ 有導回按鈕，點擊後確實**導回登入頁**，且 Email 欄位自動帶回 aliceliao@hihealth.com.tw（體驗加分）。❌ 勾 icon 顏色為品牌金棕（實測 rgba(0,0,0,0.85) 文字色系、外框金棕），AC 寫「綠色勾 icon」。❌ 標題文案「密碼已重設完成」，AC 指定「密碼已重設，請重新登入」。❌ 按鈕文字「重新登入」，AC 指定「返回登入」。⚠️ 依 SOP 原則 10，勾 icon 顏色屬視覺規格，**Figma 桌面版未開啟無法對照設計稿**，不自行判 fail — 需 Alice 或 Roman 確認以 AC 文字或 Figma 為準。【Alice 判定待補】"
-    },
-    {
-     "key": "AC12",
-     "desc": "設定新密碼頁停滯超過 10 分鐘後點「重設密碼」→ 顯示「畫面停滯過久，請重新驗證身份」",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 12:12:06 通過驗證碼進入 Step 3（verify 回應含 resetToken，expiresAt 對應 12:22:06，正好 10 分鐘），畫面停留不動至 **12:23:10** 才填入合規密碼點「重設密碼」→ 顯示警告 icon + 「**畫面停滯過久，請重新驗證身份**」，與 AC 指定文案**完全吻合**。✅ 同時 Network **無 confirm 呼叫** → 密碼確實未被更動（過期保護有效）✅ 另提供「驗證 Email」按鈕可回 Step 1 重新驗證。⚠️ 附帶觀察：由此按鈕回 Step 1 時 Email 欄位為空、未保留原 Email（AC12 未要求，但與 AC7 的保留行為不一致，列 P3）。【Alice 判定待補】"
-    },
-    {
-     "key": "AC13",
-     "desc": "新密碼設定完成後，登出其他登入裝置",
-     "status": "pass",
-     "evidence": "【我測到】2026-08-11 以嚴謹方式驗證 session 失效：① 先用第一次重設後的新密碼在前台登入成功（頭像出現），確立「重設前既存 session」② 呼叫 /next/api/storefront/member/me 取得基準線 → **200**，回傳 id/name/email/phone，確認 session 有效 ③ 在不使用該 session 的情況下（重設端點本身不需登入）完成第二次密碼重設 ④ 回頭以同一 session 再呼叫 /me → **401 code=token_expired「Invalid or expired token.」** ⑤ 重新整理前台頁面，右上角頭像退回未登入 icon、/login 不再轉址 → 舊 session 已於伺服器端失效，UI 同步登出。AC13 成立。【Alice 判定待補】"
-    }
-   ]
-  }
- ]
+  ]
 }
