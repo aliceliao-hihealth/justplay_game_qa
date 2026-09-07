@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+  <meta charset="UTF-8">
+  <title>JustPlay Sprint QA Dashboard — 2026-09-07</title>
+  <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang TC", "Noto Sans TC", sans-serif; background: #f5f7fa; color: #1f2937; padding: 24px; max-width: 1200px; margin: 0 auto; line-height: 1.5; }
+header { border-bottom: 3px solid #4f46e5; padding-bottom: 12px; margin-bottom: 24px; }
+h1 { font-size: 24px; color: #111827; }
+.meta { color: #6b7280; font-size: 14px; margin-top: 4px; }
+h2 { font-size: 18px; margin: 24px 0 12px; color: #111827; }
+h3 { font-size: 15px; margin: 12px 0 6px; color: #374151; }
+section { background: white; padding: 16px 20px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0; background: transparent; box-shadow: none; }
+.kpi { background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 4px solid #9ca3af; }
+.kpi-ip { border-left-color: #f59e0b; }
+.kpi-rft { border-left-color: #3b82f6; }
+.kpi-done { border-left-color: #10b981; }
+.kpi-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-num { font-size: 32px; font-weight: 700; margin-top: 6px; color: #111827; }
+.progress-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 12px 0 4px; background: #e5e7eb; }
+.pb-done { background: #10b981; } .pb-rft { background: #3b82f6; } .pb-ip { background: #f59e0b; } .pb-backlog { background: #9ca3af; }
+.progress-caption { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+.tldr { border-left: 4px solid #4f46e5; }
+.tldr ul, .next-steps ol, .blockers ul, .test-order ol { padding-left: 24px; }
+.tldr li, .next-steps li, .test-order li { margin: 6px 0; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+th { background: #f3f4f6; text-align: left; padding: 8px 12px; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; }
+td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+tr:hover td { background: #fafbfc; }
+.checkbox-list { list-style: none; padding-left: 0; }
+.checkbox-list li { padding: 4px 0; font-family: -apple-system, monospace; }
+code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px; display: flex; justify-content: space-between; }
+a { color: #4f46e5; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.test-note { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #78350f; }
+@media (max-width: 720px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } footer { flex-direction: column; gap: 4px; } }
+  </style>
+</head><body>
+  <header>
+    <h1>JustPlay Sprint QA Dashboard</h1>
+    <div class="meta">DT Sprint 17｜2026-09-07 週一 11:20 補產（原排程 09:03）</div>
+  </header>
+
+  <div class="test-note">
+    ⚠️ <strong>本份為 session 內補產，非雲端自動產出。</strong>今日 11:04 的雲端執行<strong>取不到 Jira 資料</strong>（中文 issuetype 與英文 Story/Bug fallback 兩次 JQL 都回 <code>UNAUTHORIZED</code> / <code>oauth_token_invalid_grant</code>），只產出 TL;DR／下一步／需先處理三段、無 KPI 與分流。此版改用本 session 可通的 Jira 權限重撈，48 張票數字已核對；<strong>雲端 routine 仍需重新授權，否則明日 09:03 會再產一份空的</strong>。<br>
+    另：本份的 RFT 三張<strong>已於今日實際手動測完</strong>（超出 routine「只做準備與分流」的範圍），故 DoR-Test 與 L1 Checklist 填的是實測結果而非草稿。逐條證據見 <a href="https://aliceliao-hihealth.github.io/justplay_game_qa/sprint-17/report.html">sprint-17 QA 報告</a>。
+  </div>
+
+  <!-- Section 1: Sprint 狀態分布 KPI 卡 -->
+  <section class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Backlog</div><div class="kpi-num">9</div></div>
+    <div class="kpi kpi-ip"><div class="kpi-label">In Progress</div><div class="kpi-num">8</div></div>
+    <div class="kpi kpi-rft"><div class="kpi-label">Ready for Test</div><div class="kpi-num">3</div></div>
+    <div class="kpi kpi-done"><div class="kpi-label">Done</div><div class="kpi-num">28</div></div>
+  </section>
+  <div class="progress-bar">
+    <div class="pb-done" style="flex:28"></div>
+    <div class="pb-rft" style="flex:3"></div>
+    <div class="pb-ip" style="flex:8"></div>
+    <div class="pb-backlog" style="flex:9"></div>
+  </div>
+  <div class="progress-caption">完成 58.3%（28/48 張）｜剩餘 RFT 3｜IP 8｜Backlog 9　·　分桶：Backlog＝Backlog 1＋待辦事項 1＋pending 6＋狀態名「bug」1；IP＝進行中 4＋Code Review 4。依 SOP 原則 6 已排除子任務。</div>
+
+  <!-- Section 2: TL;DR -->
+  <section class="tldr">
+    <h2>📌 TL;DR</h2>
+    <ul>
+      <li>今日新增待測：<strong>3 故事 + 0 bug</strong>，<strong>已全數測完</strong>。<strong>先動手：<a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">JUSTPLAY-613</a></strong>（唯一測出實質缺陷的票：規格總覽刪圖後規格列不同步，重現 2 次；需 eddy 確認欄位綁定才能定案）</li>
+      <li>昨日待複檢：<strong>無</strong>（上一份 dashboard 為授權失敗的空殼，抓不到任何 <code>JUSTPLAY-\d+</code> 可比對，故 3 張全視為今日新增）</li>
+      <li>建議退回 In Progress：<strong>0 張</strong> — <a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-670">670</a> 的 DoR-Test 不通過（無測試資料、票面未留 setup 步驟），但缺的是環境前置不是實作，補一筆測試單即可驗，退回無助於推進，故建議留在 RFT 等資料。<a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">613</a> 主功能 3 條已 pass，建議併子任務 <a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-679">679</a> 修完一起收。</li>
+      <li>阻擋／紅燈：<strong>有（3 項）</strong> — ①613 反向同步缺陷（P2 候選，待 eddy 回覆）②670 staging 自 8/28 起 0 筆新訂單，無樣本可驗 ③QA-A~F 基準商品連續第 4 次確認缺失，smoke test 第 2~5 步跑不完。另有雲端 Jira 授權失效，明日排程會再空跑。</li>
+    </ul>
+  </section>
+
+  <!-- Section 3: 下一步 -->
+  <section class="next-steps">
+    <h2>🎯 下一步（Alice 起手 3 件事）</h2>
+    <ol>
+      <li><strong>先重新授權 Atlassian/Rovo Jira connector</strong>（2 分鐘）— 不做的話明日 09:03 又是一份空 dashboard。順手確認 routine 的輸出路徑：SKILL.md 寫的 <code>~/Documents/Claude/Projects/JustPlay PRD/qa-daily.html</code> 在搬家後已不存在，實際落在 <code>~/Documents/Codex/claude-migrated-outputs/justplay/qa-daily.html</code>。</li>
+      <li><strong>ping eddy 問 613 ＋ 679</strong>：①「規格總覽」那格的圖片綁 <code>specValueImage</code> 還是 <code>skuImage</code>（畫面顯示的是前者）②679「規格總覽圖片未同步至規格」是否就是我測到的方向、修法是即時或儲存時同步、票面空白能否補一行 ③Figma 779-5537 的 hover+pressed 淺橘填色態算不算 613 範疇（空格 hover 目前只變邊框色）。</li>
+      <li><strong>解掉兩個測試前置</strong>：請 Reverie 在 staging 下一筆測試單（670 兩條 AC 立刻可補驗，順帶看 685 匯出的「平台編號」欄與 671 廠商編號是否跟著變短）；並在後台點一次「匯出報表」確認副檔名 .xlsx（685 AC3，1 秒），以及把該 xlsx 匯入莫比克一次或給我範本（685 AC2）。</li>
+    </ol>
+  </section>
+
+  <!-- Section 5: 需先處理 -->
+  <section class="blockers">
+    <h2>🔴 需先處理</h2>
+    <ul>
+      <li><strong><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">JUSTPLAY-613</a>（故事・Highest・eddy）</strong> — 規格總覽格刪圖後，上方規格列小圖不同步（重現 2 次，第 2 次重新載入頁面換另一格再測，等 2 秒仍未更新）。反方向正常 → 同步只做單向。這正是子任務 <a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-679">679</a> 票名寫的方向，而 679 今早 09:21 才推 RFT。功能可用但兩處顯示不一致、儲存後可能留矛盾資料 → <strong>P2 候選</strong>，待 eddy 確認欄位綁定與 679 修法後定案，不自行拍板。</li>
+      <li><strong><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-670">JUSTPLAY-670</a>（故事・Highest・Reverie）</strong> — DoR-Test 第 4 項不成立：9/4 15:20 推 RFT，但 staging 86 筆訂單全在 8/28 以前，最新一筆 <code>20260828GM000136</code> 仍是 16 碼舊格式，<strong>沒有任何新格式訂單可驗</strong>，票面也未留 setup 步驟。建立訂單需前台會員登入，無人自動流程不代輸入密碼 → 2 條 AC 全數未測。</li>
+      <li><strong>QA 基準商品缺失（環境級，連續第 4 次確認）</strong> — QA-A~QA-F 六支 storefront search 各 0 筆（對照組「瑪利歐」34 筆＝搜尋功能正常）。影響 smoke test 第 2~5 步無安全測試資料可跑，只能拿工程自建的 Active 測試品替代而那些不該寫入。重建依 <a href="https://hihealthtw.atlassian.net/wiki/spaces/JP1/pages/edit-v2/157319178">Confluence 157319178</a>，自 sprint-14 起未解。</li>
+      <li><strong>雲端 routine Jira 授權失效</strong> — 今日 11:04 兩次 JQL（中文 issuetype 與英文 Story/Bug fallback）皆回 <code>UNAUTHORIZED</code> / <code>oauth_token_invalid_grant</code>，故雲端版無 KPI 與分流。不重新授權，明日 09:03 會再產一份空殼。</li>
+      <li><strong><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-679">JUSTPLAY-679</a>（子任務・eddy）</strong> — description 為 <code>null</code> 卻已在 RFT。依原則 6 不主測子任務，但它與 613 同在 RFT、票名正是我測到的缺陷方向；票面完全空白，日後獨立驗收會卡住，建議請 eddy 補一行修法。</li>
+    </ul>
+  </section>
+
+  <!-- Section 6: 建議測試順序（只列今日新增） -->
+  <section class="test-order">
+    <h2>📋 建議測試順序（今日新增）</h2>
+    <ol>
+      <li><strong><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">JUSTPLAY-613</a>（故事・Highest・後台商品規格圖片）</strong> — 已測完：6 條驗收點 5 條有結論（83%），3 pass／1 partial／1 fail／1 未測。<strong>剩餘</strong>：PERSIST（刪除後按更新 → 後端欄位清空、前台不再顯示），需你同意在工程測試品上真的寫入。</li>
+      <li><strong><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-670">JUSTPLAY-670</a>（故事・Highest・訂單編號）</strong> — 最高風險又完全沒驗到，<strong>有新訂單就排第一</strong>：驗 26 開頭＋總長 ≤15 碼，抽 2~3 筆不同時間的單，不可只看一筆；並跨票檢查 685 匯出「平台編號」欄與 671 廠商編號。</li>
+      <li><strong><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-685">JUSTPLAY-685</a>（故事・Medium・匯出 xlsx）</strong> — 已測完 2/3：端點確認回真 xlsx（MIME spreadsheetml.sheet、前 4 bytes <code>50 4B 03 04</code>、完整 OOXML 結構、Sheet1 共 117 列 25 欄）。<strong>剩餘</strong>：欄位與莫比克範本逐欄比對、UI 按鈕落地檔名。</li>
+      <li><strong>613 修復後回歸</strong> — 重跑兩個同步方向＋儲存持久化，確認改一邊沒壞另一邊（§3.2.1 Bug 測法：周邊回歸）。</li>
+      <li><strong>smoke test 補完</strong> — 等 QA-A~F 重建後跑第 2~5 步；目前僅第 1 步（首頁 200＋ISR 正常）完整通過。</li>
+    </ol>
+  </section>
+
+  <!-- Section 7: 故事 DoR-Test -->
+  <section class="dor-test">
+    <h2>故事 DoR-Test 結果</h2>
+    <table>
+      <thead><tr><th>票號</th><th>標題</th><th>DoR 通過?</th><th>紅黃燈</th><th>風險</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">JUSTPLAY-613</a></td>
+          <td>【後台 新增/編輯商品】規格內的照片要可以刪除</td>
+          <td>🟡 部分（功能已實作、可測；但票面無 Given/When/Then AC，只有一行描述＋Figma 連結）</td>
+          <td>🔴 紅：反向同步缺陷（＝子任務 679 方向，679 今早才進 RFT）<br>🟡 黃：Figma hover+pressed 態與實作不符，範疇待判</td>
+          <td>高（後台商品編輯核心，涉及資料寫入）<br>實測：3 pass／1 partial／1 fail／1 未測（覆蓋 83%）</td>
+        </tr>
+        <tr>
+          <td><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-670">JUSTPLAY-670</a></td>
+          <td>訂單編號更改規格：改成 26 開頭</td>
+          <td>❌ 不通過：無測試資料（推 RFT 後 staging 0 筆新訂單）、票面未留 setup 步驟</td>
+          <td>🔴 紅：無樣本可驗，2 條 AC 全未測</td>
+          <td>高（訂單編號跨訂單追蹤／信件／後台／匯出報表／廠商編號多處，且關係財會匯入）<br>實測：0/2（覆蓋 0%）</td>
+        </tr>
+        <tr>
+          <td><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-685">JUSTPLAY-685</a></td>
+          <td>報表匯出格式：csv → xlsx</td>
+          <td>✅ 通過（後端已部署、端點可直驗）</td>
+          <td>🟡 黃：「與莫比克同步」缺對照範本；UI 下載檔名需人工點一次確認</td>
+          <td>中（營運匯出流程，非交易路徑）<br>實測：1 pass／1 partial／1 未測（覆蓋 67%）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 13px; color: #6b7280; margin-top: 8px;">DoR 註：三張票面<strong>都沒有正式編號 AC</strong>，驗收依據＝票名＋描述原文（613 另有 Figma node 779-5537 與 Alice 8/28 comment）。每條驗收點在 HTML 報告上都標了來源，請 Alice 人工把關拆法。子任務 653／679 依 SOP 原則 6 不列驗收單位。依 §3.2 鐵則，670 的 0% 與 613 的 83% 都不足以標 PASS。</p>
+  </section>
+
+  <!-- Section 8: Bug 重測清單 -->
+  <section class="bug-retest">
+    <h2>Bug 重測清單</h2>
+    <p style="font-size: 13px; color: #6b7280; margin: 0 0 4px;">本 sprint <strong>無「漏洞」票型進 RFT</strong>。以下兩列是 613 涉及的 bug 性質回報（Alice 8/28 comment）與同在 RFT 的子任務 679，依 §3.2.1 Bug 測法處理：重跑原回報方向 → 確認現象消失 → 跑相鄰流程確認沒改壞。</p>
+    <table>
+      <thead><tr><th>票號</th><th>現象</th><th>重測步驟重點</th><th>周邊回歸提醒</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">JUSTPLAY-613</a><br>（Alice 8/28 comment）</td>
+          <td>「bug, 規格一圖片刪除後未同步」（附截圖）</td>
+          <td>✅ <strong>已修復</strong>：規格1「項目1」列點垃圾桶 → 規格總覽同格同步變空（DOM img 歸零、原圖從總覽消失），另一列不受影響；重做 1 次結果相同</td>
+          <td>已確認刪一格不影響其他格。規格2 的值即使 API 有圖、UI 本來就不顯示（非本次造成）。<strong>儲存後持久化未驗</strong>（需同意寫入）</td>
+        </tr>
+        <tr>
+          <td><a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-679">JUSTPLAY-679</a><br>（子任務，description 空）</td>
+          <td>「規格總覽圖片未同步至規格」</td>
+          <td>🔴 <strong>仍存在</strong>：① 刪總覽「項目1-2×項目2」→ 總覽空、列上小圖仍在 ② 重新載入後改刪「項目1×項目2」→ 同樣總覽空、列上仍在，等 2 秒未更新</td>
+          <td>與正向同步對照＝單向。資料層：總覽格顯示的是 <code>specValueImage</code>（SKU1 的 <code>skuImage</code> 未被顯示）→ 需 eddy 確認綁定。修完要回歸兩個方向＋儲存</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 13px; color: #6b7280; margin-top: 8px;">測試資料聲明：依 SOP 原則 5 不動真實商品。本輪用工程自建的「測試建立商品」<code>01a032f9</code>（規格1 項目1／項目1-2 有圖、規格2 項目2），全程在表單內操作、按取消離開、未寫入；API 覆核 <code>updatedAt</code> 仍為 <code>2026-09-07T01:10:23Z</code>、3 張規格圖完整。QA-A~F 缺失，無法改用基準資料。</p>
+  </section>
+
+  <!-- Section 9: L1 Checklist（高風險故事才有） -->
+  <section class="l1-checklist">
+    <h2>L1 Checklist 草稿（高風險）</h2>
+
+    <h3>▍<a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-613">JUSTPLAY-613</a> 規格內的照片要可以刪除　<span style="color:#991b1b;font-weight:600;">實測結果：FAIL 候選</span></h3>
+    <p style="font-size: 14px; color: #4b5563; margin-bottom: 6px;"><strong>核心驗收重點</strong>：規格圖片可刪除、且改為「先刪再傳」；刪除後規格列與規格總覽兩處要一致。票面無編號 AC，以下驗收點由票名＋描述原文＋Figma node 779-5537＋Alice 8/28 comment 拆出。</p>
+    <ul class="checkbox-list">
+      <li>☑ <strong>A-D1（票名）</strong>：規格列 32px 與總覽 60px 兩處都有刪除鈕，hover 顯示半透黑底＋白垃圾桶（實測 opacity 0→1、<code>rgba(0,0,0,.5)</code>、icon 小 14px／大 24px），點下去該格立即回空狀態、無 modal、無 toast、其他圖不受影響</li>
+      <li>☑ <strong>A-D2（描述「先刪除才能新增」）</strong>：有圖的格點本體不開檔案選取器（攔截 <code>HTMLInputElement.click</code> 計數＝0）；刪除後 aria-label 由「選項圖片」變「上傳圖片」，再點開啟 1 次（accept <code>.jpg,.jpeg,.png</code>）</li>
+      <li>◐ <strong>A-D3（描述「依據 figma 調整」）</strong>：Default／有圖／有圖+hover 三態小圖大圖皆吻合；<strong>hover+pressed 不符</strong> — Figma 為淺橘填色底，實測空格 hover 只有邊框變深（<code>rgb(224,180,130)</code>→<code>rgb(201,151,91)</code>）、背景仍透明 → PARTIAL</li>
+      <li>☑ <strong>A-S1（Alice 8/28 comment）</strong>：規格列刪圖 → 規格總覽同步變空，重做 1 次結果相同</li>
+      <li>☒ <strong>A-S2（子任務 679 票名）</strong>：規格總覽刪圖 → 規格列<strong>未</strong>同步，重現 2 次 → FAIL，P2 候選</li>
+      <li>☐ <strong>A-P1（資料持久化，我加的必要驗收點）</strong>：刪除後按「更新」→ 後端 <code>specValueImage</code> 清空、重新載入與前台都不再顯示 → 未測（需同意寫入，圖片刪掉無法還原）</li>
+    </ul>
+    <p style="font-size: 13px; color: #6b7280; margin-top: 8px;">黃燈備註：A-D3 的 hover+pressed 是 613 之前就存在的舊元件行為（子任務 653 明寫「無圖片：維持現行點擊上傳行為，UI 不變」），依原則 10 不自行判 Fail，範疇待 Alice 判定，建議最多 P3。</p>
+
+    <h3 style="margin-top: 20px;">▍<a href="https://hihealthtw.atlassian.net/browse/JUSTPLAY-670">JUSTPLAY-670</a> 訂單編號改 26 開頭　<span style="color:#4b5563;font-weight:600;">待新訂單，草稿備用</span></h3>
+    <p style="font-size: 14px; color: #4b5563; margin-bottom: 6px;"><strong>核心驗收重點</strong>：新訂單編號 26 開頭且總長 ≤15 碼（財會匯入限制）。<strong>前置：staging 需有一筆新訂單。</strong>現況最新單 <code>20260828GM000136</code> ＝ <code>YYYYMMDD</code>＋<code>GM</code>＋6 碼流水 ＝ 16 碼。</p>
+    <ul class="checkbox-list">
+      <li>☐ <strong>B-A1（描述「決議採用 26開頭」）</strong>：下一筆新單訂單編號開頭為 <code>26</code>；抽 2~3 筆不同時間的單比對，不可只看一筆</li>
+      <li>☐ <strong>B-A2（描述「格式=&lt;15碼」）</strong>：新編號總長 ≤15 碼（若改法是年份去掉「20」→ <code>260828GM000136</code>＝14 碼會符合；<strong>此為推論、非票面文字</strong>，實際以新單為準）</li>
+      <li>☐ <strong>B-X1（跨票銜接 L2）</strong>：新編號在多處一致 — 後台訂單列表／685 匯出報表「平台編號」欄／671 廠商訂單編號（＝官網編號＋A01，是否跟著變短）／訂單追蹤頁／通知信</li>
+      <li>☐ <strong>B-X2（Out of Scope 待確認）</strong>：既有 86 筆舊訂單是否回溯改號 — 票面未提，預設不改，要驗請先確認決議</li>
+    </ul>
+  </section>
+
+  <footer>
+    <div>資料來源：Jira Cloud（hihealthtw.atlassian.net，session 內權限重撈；雲端 connector 授權失效）｜Skill: <code>justplay-rft-qa-prep</code> ＋ <code>hi-health-qa-sop v1.5</code></div>
+    <div>下次執行：明日 09:03（<strong>需先重新授權</strong>）</div>
+  </footer>
+</body></html>
