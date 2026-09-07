@@ -1,0 +1,94 @@
+{
+  "sprintLabel": "DT Sprint 17",
+  "sopVersion": "v1.5",
+  "firstTestDate": "2026-09-07",
+  "lastSyncDate": "2026-09-07",
+  "note": "2026-09-07 首輪：Sprint 17 開站（Sprint 16 未建報告——JUSTPLAY-678「sprint 16 測項出給 ashley」由測試團隊執行，故 tab 順序為 17 → 15 → 14 → 13 → 12）。JQL 抓 DT Sprint 17 全部 story/bug 共 48 張、RFT 3 張：613（Highest·eddy）/ 670（Highest·Reverie）/ 685（Medium·Reverie），三張票面皆無正式 Given/When/Then AC，驗收依據＝票名＋描述原文（613 另有 Figma node 779-5537 與 Alice 8/28 comment；子任務 653/679 依 SOP 原則 6 不列驗收單位、僅作實作說明參考）。結果：**613 整票 FAIL 候選**——刪除、先刪再傳、Figma 三態、規格→總覽同步皆 pass，但「規格總覽→規格」方向刪除不同步（在表單內重現 2 次，正是子任務 679 票名描述的方向，679 今日 09:21 才推 RFT），待 eddy 確認總覽格是綁 specValueImage 還是 skuImage 再定 P2 開票；**670 無法驗證**——staging 最新訂單仍是 8/28 的 20260828GM000136（16 碼舊格式），9/4 推 RFT 後沒有任何新訂單，建立訂單需會員登入（我不代輸入密碼）→ 請 Alice 或 Reverie 在 staging 下一筆測試單後我再驗；**685 PARTIAL**——匯出端點已回真 xlsx（MIME＋PK 魔術碼＋OOXML 結構、25 欄 117 列），欄位是否與莫比克匯入範本逐欄相符、UI 按鈕實際落地檔名兩項待 Alice 確認（我未點「匯出報表」以免檔案落到你的下載資料夾）。⚠️ 環境聲明：後台以 Chrome 密碼管理員 autofill 登入（我不經手密碼值）；613 全部在「測試建立商品」（01a032f9，eddy 今早 09:10 自測用）的編輯表單內操作、每輪都按「取消」離開、**未按更新**，API 確認 updatedAt 仍為 2026-09-07T01:10:23Z、3 張規格圖完整；未建立訂單、未改任何商品或 QA 資料。QA-A~F 基準商品第 4 次確認仍缺失（storefront search 全 0 筆），smoke 第 2~5 步依舊無安全測試資料可跑。另記：sprint-15 模板的 STORAGE_KEY 沿用 sprint14 的 key（兩份報告共用 localStorage，在其中一份按「清空手動紀錄」會連另一份一起清），依鐵則我沒改，請 Alice 知悉。",
+  "pending": [
+    {
+      "id": "613",
+      "title": "【後台 新增/編輯商品】規格內的照片要可以刪除",
+      "acs": [
+        {
+          "key": "DoD1",
+          "desc": "規格內的照片要可以刪除（票名；描述原文「依據figma 調整：改成要先刪除照片，才能新增照片」）",
+          "status": "pass",
+          "evidence": "【我測到】2026-09-07 staging-bo /products/01a032f9…/edit「測試建立商品」（規格1：項目1／項目1-2 有圖、規格2：項目2）。規格列 32px 小圖與規格總覽 60px 大圖兩處都有 aria-label=「刪除圖片」的覆蓋按鈕（4 顆＝2 列＋2 格）：未 hover 時 opacity 0，hover 後 opacity 1、背景 rgba(0,0,0,.5)、白色 delete icon（小 14px／大 24px）；點垃圾桶後該格立即回到空狀態（虛線框＋圖片 icon＋「＋」）、無 modal、無 toast，其餘圖片不受影響。與子任務 653 實作說明（先刪再傳、覆蓋層 bg-black/50、icon 14/24）一致。全程未按「更新」。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD2",
+          "desc": "改成要先刪除照片，才能新增照片（Jira 描述原文）",
+          "status": "pass",
+          "evidence": "【我測到】2026-09-07 有圖的格 aria-label=「選項圖片」、覆蓋層蓋滿整格，唯一可點目標就是垃圾桶；以攔截 HTMLInputElement.click 的方式驗證：程式化點擊「有圖」格 → 檔案選取器開啟次數 0；刪除後該格 aria-label 變「上傳圖片」，再點 → 檔案選取器開啟 1 次（accept=.jpg,.jpeg,.png）。即「有圖時不能直接換圖、刪掉才能新增」成立。【Alice 判定待補】"
+        },
+        {
+          "key": "DoD3",
+          "desc": "依據 Figma 調整（Jira 描述原文；Figma node 779-5537「add photo」component set：Default／hover+pressed／有圖／有圖＋hover × small 32／big 60）",
+          "status": "partial",
+          "evidence": "【我測到】2026-09-07 對照 Figma 4 態 × 2 尺寸：Default（虛線框＋圖片 icon＋「＋」）✓ 小／大都吻合；有圖 ✓；有圖＋hover（半透黑底＋白垃圾桶）✓ 小／大都吻合。⚠️ hover+pressed（Figma 為淺橘填色底）：實測空格 hover 只有邊框變深（rgb(224,180,130)→rgb(201,151,91)）、背景仍透明，與 Figma 填色不同——但此態是 613 之前就存在的舊元件行為（653 明寫「無圖片：維持現行點擊上傳行為，UI 不變」），是否算 613 範疇待 Alice 判定；建議最多 P3。【Alice 判定待補】"
+        },
+        {
+          "key": "SYNC1",
+          "desc": "規格列刪除圖片 → 規格總覽同步（Alice 2026-08-28 comment 原文「bug, 規格一圖片刪除後未同步」的方向）",
+          "status": "pass",
+          "evidence": "【我測到】2026-09-07 在規格1「項目1」列點垃圾桶 → 規格總覽「項目1×項目2」格同步變空（DOM img 0、原 01M0VXHZ… 圖從總覽消失），另一列「項目1-2」不受影響；同一操作重做 1 次結果相同。8/28 回報的方向已修復（表單內即時同步；儲存後持久化見 PERSIST）。【Alice 判定待補】"
+        },
+        {
+          "key": "SYNC2",
+          "desc": "規格總覽刪除圖片 → 規格列同步（子任務 679 票名「規格總覽圖片未同步至規格」的方向；679 與 613 同在 RFT）",
+          "status": "fail",
+          "evidence": "【我測到】2026-09-07 重現 2 次：① 在規格總覽「項目1-2×項目2」格點垃圾桶 → 總覽格變空，但規格1 列「項目1-2」的小圖仍在（aria 仍是「選項圖片」、img 01M0VF99… 仍在 DOM）；② 重新載入頁面後改刪總覽「項目1×項目2」格 → 同樣總覽空、列上「項目1」小圖仍在（等 2 秒仍未更新，見截圖：上方列有圖、下方總覽同格為「＋」空框）。與 SYNC1 對照＝同步只有「列→總覽」單向。資料層備註：API specs[].values[].specValueImage（列）與 skus[].skuImage（總覽格？）是兩個欄位，但總覽格顯示的是 specValueImage（SKU1 的 skuImage 01M0VZRG… 並未顯示）→ 需 eddy 確認總覽格到底綁哪個欄位、以及 679 的修法是否只在儲存時同步。若確認為缺陷建議 P2（功能可用、但兩處顯示不一致，儲存後可能留下矛盾資料）。【Alice 判定待補】"
+        },
+        {
+          "key": "PERSIST",
+          "desc": "刪除後按「更新」儲存 → 後端 specValueImage 清空、重新載入與前台不再顯示該圖",
+          "status": "skip",
+          "evidence": "【尚未測試】2026-09-07 未執行儲存：可用的多規格商品只有「測試建立商品」等工程自建測試品（非 SOP 原則 5 的 QA-A~F 基準商品，且為 Active 上架狀態），寫入會永久移除圖片且我無法還原（重傳需檔案）。每輪皆按「取消」離開，API 確認 updatedAt 仍 2026-09-07T01:10:23Z、3 張規格圖完整。Alice 若同意在該商品上做，我可補測（刪除→更新→API 與前台各查一次）。"
+        }
+      ]
+    },
+    {
+      "id": "670",
+      "title": "訂單編號更改規格：改成26開頭",
+      "acs": [
+        {
+          "key": "AC1",
+          "desc": "訂單編號改成 26 開頭（Jira 描述原文「決議採用 26開頭」）",
+          "status": "skip",
+          "evidence": "【尚未測試】2026-09-07 staging-bo admin orders API（sortCreatedTime=desc）最新一筆為 20260828GM000136（2026-08-28 06:01Z），670 於 9/4 15:20 推 RFT 之後 staging **沒有任何新訂單**（86 筆全在 8/28 以前），沒有樣本可驗新格式。建立訂單需前台會員登入（我不代輸入密碼），故本輪無法自行產生樣本 → 請 Alice 或 Reverie 在 staging 下一筆測試單（或貼一個新編號）後我立即補驗。"
+        },
+        {
+          "key": "AC2",
+          "desc": "平台訂單編號格式 ≤15 碼（Jira 描述原文「財會匯入財會系統會有問題，需要平台訂單編號格式=<15碼」）",
+          "status": "skip",
+          "evidence": "【尚未測試】同 AC1 無新訂單樣本。現況：舊格式 YYYYMMDD＋GM＋6 碼流水＝16 碼（如 20260828GM000136），超過 15 碼；若改法只是年份去掉「20」→ 260828GM000136＝14 碼會符合——這是我的推論、非票面文字，實際格式以新訂單為準。驗證時建議一併看：685 匯出報表「平台編號」欄、671（完成）「廠商訂單編號＝官網訂單編號＋A01」是否跟著變短。"
+        }
+      ]
+    },
+    {
+      "id": "685",
+      "title": "報表匯出格式: csv->xslx",
+      "acs": [
+        {
+          "key": "AC1",
+          "desc": "官網後台匯出格式由 csv 改為 xlsx（票名；Jira 描述原文「莫比克匯入格式：xslx／官網後台匯出格式：csv／目標：將『官網後台匯出』跟莫比克同步」）",
+          "status": "pass",
+          "evidence": "【我測到】2026-09-07 以登入 session 直接請求 GET /next/api/admin/orders/export → HTTP 200、Content-Type application/vnd.openxmlformats-officedocument.spreadsheetml.sheet、前 4 bytes 50 4B 03 04（zip 魔術碼）、19,111 bytes；在瀏覽器記憶體內解開 zip：[Content_Types].xml、xl/workbook.xml、xl/worksheets/sheet1.xml、xl/sharedStrings.xml、xl/styles.xml、xl/comments1.xml…＝真正的 OOXML xlsx，不是改副檔名的 csv。工作表「Sheet1」共 117 列（表頭＋116 資料列；86 筆訂單 → 以品項為列）。未存檔到本機。【Alice 判定待補】"
+        },
+        {
+          "key": "AC2",
+          "desc": "匯出欄位與莫比克匯入格式同步（Jira 描述原文「目標：將『官網後台匯出』跟莫比克同步」「目的：減輕人員需開啟檔案後再轉檔成本」）",
+          "status": "partial",
+          "evidence": "【我測到】2026-09-07 表頭 25 欄依序：平台／店鋪編號／姓名／電話／手機號碼／品項條碼／商品編號／商品規格／數量／小計／總金額／付款方式／出貨方式／地址／買家備註／店家備註／平台編號／建立日期／出貨備註／發票類型／發票載具類型／發票載具編號／統一編號／訂單狀態／邀請碼；首列 平台＝「自訂交易」、店鋪編號＝027（看起來就是莫比克匯入欄位）；663（完成）新增的「出貨備註」欄在。⚠️ 我手上沒有莫比克匯入範本，無法逐欄比對欄名順序／必填／格式（日期、金額型別）→ 待 Alice 拿這份 xlsx 實際匯入莫比克一次，或給我範本我來比對。【Alice 判定待補】"
+        },
+        {
+          "key": "AC3",
+          "desc": "後台「匯出報表」按鈕實際下載的檔案為 .xlsx（UI 路徑）",
+          "status": "skip",
+          "evidence": "【尚未測試】2026-09-07 訂單管理右上「匯出報表」為 type=button、無 href（走前端程式下載），端點回應沒有 Content-Disposition 檔名 → 檔名由前端決定；我未點擊以免檔案直接落到 Alice 的下載資料夾。請 Alice 點一次確認檔名副檔名為 .xlsx、Excel 可直接開啟（1 秒）。"
+        }
+      ]
+    }
+  ],
+  "passed": []
+}
